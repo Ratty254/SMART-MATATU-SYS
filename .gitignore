@@ -1,6 +1,6 @@
+
 node_modules/
 **/node_modules/
-
 
 .env
 .env.*
@@ -8,7 +8,6 @@ node_modules/
 **/.env.*
 !.env.example
 !**/.env.example
-
 
 *.db
 *.db-*
@@ -19,7 +18,8 @@ node_modules/
 *.dp
 *.dp-*
 
-
+backup.json
+**/backup.json
 transactions-backup.json
 **/transactions-backup.json
 *backup*.js
@@ -32,9 +32,11 @@ transactions-backup.json
 **/*.log
 *.tmp
 *.temp
+
 Thumbs.db
 .DS_Store
 desktop.ini
+
 
 .vscode/
 .idea/
