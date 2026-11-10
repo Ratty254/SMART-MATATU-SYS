@@ -1,4 +1,5 @@
-
+console.log("Smart Matatu frontend script loaded.");
+console.log("Ratty test -10 NOVEMBER 2026.");
 
 const fareInput = document.getElementById("fare");
 const passengersInput = document.getElementById("passengers");
@@ -29,6 +30,18 @@ const kpiUssd = document.getElementById("kpi-ussd");
 
 const API_URL = "http://localhost:3000/api/transactions";
 const STORAGE_KEY = "smartMatatuTransactions";
+
+const LOGIN_URL = "http://localhost:3000/api/auth/login";
+
+const loginForm = document.getElementById("login-form");
+const loginUsername = document.getElementById("login-username");
+const loginPassword = document.getElementById("login-password");
+const loginMessage = document.getElementById("login-message");
+const loginButton = document.getElementById("login-button");
+
+const loginSection = document.getElementById("login-section");
+const dashboardSection = document.getElementById("dashboard-section");
+
 
 
 let selectedpaymentMethod = null;
@@ -538,28 +551,28 @@ if (confirmButtonEl) {
 
         const originalButtonText = confirmButtonEl.textContent;
         confirmButtonEl.textContent = "Processing...";
-
+const token = localStorage.getItem("authToken");
         try {
+            const token = sessionStorage.getItem("authToken");
             const response = await fetch(API_URL, {
                 method: "POST",
                 headers: {
-                    "Content-Type": "application/json"
+                    
+                    "Authorization": `Bearer ${token}`
+                
                 },
-                body: JSON.stringify(newTransaction)
+            
             });
 
-            const data = await response.json();
-
-            if (!response.ok || data.status !== "success" || !data.transaction) {
+const data = await response.json();
+if (!response.ok || data.status !== "success" || !data.transaction) {
                 throw new Error(
                     data.message || "The backend rejected the transaction."
                 );
             }
 
-            
             const savedTransaction = data.transaction;
 
-            
             const existingIndex = transactions.findIndex(function (item) {
                 return item.id === savedTransaction.id;
             });
@@ -574,16 +587,13 @@ if (confirmButtonEl) {
             displayTransactions();
             updateDashboardSummary();
 
-            
             showTransactionConfirmation(savedTransaction);
 
             console.log("Transaction saved by backend:", savedTransaction);
-
             
             fareInput.value = "";
             passengersInput.value = "";
             calculateTotalFare();
-
             selectedpaymentMethod = null;
 
             paymentButtons.forEach(function (button) {
@@ -607,8 +617,6 @@ if (confirmButtonEl) {
                     "Transaction was not confirmed. Check that the backend is running."
                 );
             }
-
-            
         } finally {
             isSubmittingPayment = false;
             confirmButtonEl.disabled = false;
@@ -616,6 +624,7 @@ if (confirmButtonEl) {
         }
     });
 }
+
 
 
 async function loadTransactionsFromBackend() {
@@ -656,23 +665,102 @@ async function loadTransactionsFromBackend() {
     }
 }
 
+if (loginForm) {
+    loginForm.addEventListener("submit", async function (event) {
+        event.preventDefault();
+        console.log("Login Event detected.");
+
+        const username = loginUsername.value.trim();
+        const password = loginPassword.value;
+
+        if (!username || !password) {
+            loginMessage.textContent = "Enter your username and password.";
+            return;
+        }
+
+        loginButton.disabled = true;
+        loginButton.textContent = "Authenticating...";
+        loginMessage.textContent = "";
+
+        try {
+            const response = await fetch(LOGIN_URL, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    username: username,
+                    password: password
+                })
+            });
+
+            const data = await response.json();
+
+            if (!response.ok || data.status !== "success" || !data.token) {
+                throw new Error(data.message || "Login failed.");
+            }
+
+            
+            sessionStorage.setItem("authToken", data.token);
+
+            if (data.user) {
+                sessionStorage.setItem(
+                    "authUser",
+                    JSON.stringify(data.user)
+                );
+            }
+
+            
+            loginSection.hidden = true;
+            dashboardSection.hidden = false;
+
+            loginPassword.value = "";
+
+            console.log("Login successful.");
+
+            await loadTransactionsFromBackend();
+
+        } catch (error) {
+            console.error("Login error:", error);
+
+            loginMessage.textContent = error.message;
+
+        } finally {
+            loginButton.disabled = false;
+            loginButton.textContent = "Login";
+        }
+    });
+}
 
 
 function initializeSmartMatatu() {
+
     calculateTotalFare();
-    displayTransactions();
-    updateDashboardSummary();
-    loadTransactionsFromBackend();
+
+    
+    if (dashboardSection) {
+        dashboardSection.hidden = true;
+    }
+
+    if (loginSection) {
+        loginSection.hidden = false;
+    }
+
 }
 
+
 if (document.readyState === "loading") {
+
     document.addEventListener(
         "DOMContentLoaded",
         initializeSmartMatatu,
         { once: true }
     );
+
 } else {
+
     initializeSmartMatatu();
+
 }
 
 console.log("Smart Matatu frontend ready.");

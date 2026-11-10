@@ -10,6 +10,53 @@
 </head>
 
 <body>
+<div id="login-section" class="container">
+
+    <div class="card">
+
+        <h1>Smart Matatu</h1>
+
+        <h2>System Login</h2>
+
+        <p>Enter your account credentials to continue.</p>
+
+        <form id="login-form">
+
+            <label for="login-username">Username:</label>
+
+            <input
+                type="text"
+                id="login-username"
+                placeholder="Enter username"
+                required
+            >
+
+            <label for="login-password">Password:</label>
+
+            <input
+                type="password"
+                id="login-password"
+                placeholder="Enter password"
+                required
+            >
+
+            <button
+                type="submit"
+                id="login-button"
+                class="primary-button"
+            >
+                Login
+            </button>
+
+            <p id="login-message" role="alert"></p>
+
+        </form>
+
+    </div>
+
+</div>
+
+<div id ="dashboard-section" hidden>
 
     <h1>Smart Matatu</h1>
 
@@ -201,6 +248,7 @@ class="payment-result">
     </div>
 
 </section>
+</div>       
 <script src="script.js"></script>
 </body>
 

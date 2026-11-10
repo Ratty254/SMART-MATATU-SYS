@@ -1,10 +1,19 @@
+require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
 const path = require("path");
 const Database = require("better-sqlite3");
+const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
+
 
 const app = express();
 const PORT = 3000;
+const JWT_SECRET = process.env.JWT_SECRET;
+
+if (!JWT_SECRET) {
+    throw new Error("JWT_SECRET environment variable is required");
+}
 
 app.use(cors());
 app.use(express.json());
@@ -31,6 +40,64 @@ db.exec(`
         dateTime TEXT NOT NULL
     )
 `);
+db.exec(`
+    CREATE TABLE IF NOT EXISTS users (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        username TEXT NOT NULL UNIQUE,
+        password_hash TEXT NOT NULL,
+        role TEXT NOT NULL
+            CHECK (role IN ('conductor', 'sacco_manager', 'admin')),
+        created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+    )
+`);
+
+const findUserByUsername = db.prepare(`
+    SELECT id, username, password_hash, role
+    FROM users
+    WHERE username = ?
+`);
+const insertUser = db.prepare(`
+    INSERT INTO users (username, password_hash, role)
+    VALUES (?, ?, ?)
+`);
+
+function authenticateToken(req, res, next) {
+    const authHeader = req.headers["authorization"];
+
+    const token = authHeader && authHeader.split(" ")[1];
+
+    if (!token) {
+        return res.status(401).json({
+            status: "error",
+            message: "Authentication required. Please log in."
+        });
+    }
+
+    jwt.verify(token, JWT_SECRET, (error, user) => {
+        if (error) {
+            return res.status(403).json({
+                status: "error",
+                message: "Invalid or expired authentication token."
+            });
+        }
+
+        req.user = user;
+        next();
+    });
+}
+function authorizeRoles(...allowedRoles) {
+    return (req, res, next) => {
+        if (!req.user || !allowedRoles.includes(req.user.role)) {
+            return res.status(403).json({
+                status: "error",
+                message: "Access denied. You do not have permission."
+            });
+        }
+
+        next();
+    };
+}
+
 
 const findTransaction = db.prepare(
     "SELECT id FROM transactions WHERE id = ?"
@@ -52,7 +119,107 @@ const getTransactionCount = db.prepare(
     "SELECT COUNT(*) AS count FROM transactions"
 );
 
+app.post("/api/auth/login", (req, res) => {
+    const { username, password } = req.body;
 
+    if (
+        typeof username !== "string" ||
+        typeof password !== "string" ||
+        !username.trim() ||
+        !password
+    ) {
+        return res.status(400).json({
+            status: "error",
+            message: "Username and password are required"
+        });
+    }
+
+    const user = findUserByUsername.get(username.trim());
+
+    if (!user || !bcrypt.compareSync(password, user.password_hash)) {
+        return res.status(401).json({
+            status: "error",
+            message: "Invalid username or password"
+        });
+    }
+
+    const token = jwt.sign(
+        {
+            id: user.id,
+            username: user.username,
+            role: user.role
+        },
+        JWT_SECRET,
+        { expiresIn: "1h" }
+    );
+
+    return res.json({
+        status: "success",
+        message: "Login successful",
+        token,
+        user: {
+            id: user.id,
+            username: user.username,
+            role: user.role
+        }
+    });
+});
+
+app.post(
+    "/api/users",
+    authenticateToken,
+    authorizeRoles("admin"),
+    async (req, res) => {
+        const { username, password, role } = req.body;
+
+        if (
+            typeof username !== "string" ||
+            typeof password !== "string" ||
+            !/^[a-zA-Z0-9_.-]{3,30}$/.test(username) ||
+            password.length < 12 ||
+            !["conductor", "sacco_manager"].includes(role)
+        ) {
+            return res.status(400).json({
+                status: "error",
+                message: "Invalid username, password, or role. Password must have at least 12 characters."
+            });
+        }
+
+        try {
+            const passwordHash = await bcrypt.hash(password, 12);
+
+            const result = insertUser.run(
+                username,
+                passwordHash,
+                role
+            );
+
+            return res.status(201).json({
+                status: "success",
+                message: "User account created successfully",
+                user: {
+                    id: result.lastInsertRowid,
+                    username,
+                    role
+                }
+            });
+        } catch (error) {
+            if (error.code === "SQLITE_CONSTRAINT_UNIQUE") {
+                return res.status(409).json({
+                    status: "error",
+                    message: "Username already exists"
+                });
+            }
+
+            console.error("User creation failed:", error.message);
+
+            return res.status(500).json({
+                status: "error",
+                message: "Could not create user"
+            });
+        }
+    }
+);
 app.get("/api/health", (req, res) => {
     res.json({
         status: "success",
@@ -63,7 +230,7 @@ app.get("/api/health", (req, res) => {
 });
 
 
-app.post("/api/transactions", (req, res) => {
+app.post("/api/transactions",authenticateToken,authorizeRoles("conductor","admin"), (req, res) => {
     const {
         id,
         fare,
@@ -99,7 +266,7 @@ app.post("/api/transactions", (req, res) => {
             status: "error",
             message: "Transaction ID already exists"
         });
-    }
+}
 
     const transaction = {
         id: transactionId,
@@ -151,7 +318,7 @@ app.post("/api/transactions", (req, res) => {
 });
 
 
-app.get("/api/transactions", (req, res) => {
+app.get("/api/transactions",authenticateToken,authorizeRoles("conductor","sacco_manager","admin"), (req, res) => {
     try {
         const transactions = getAllTransactions.all();
 
