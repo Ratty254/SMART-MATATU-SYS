@@ -3,253 +3,513 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>Smart Matatu</title>
-    <link rel="stylesheet"
-    href="style.css">
-    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Matatu Management System</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
-<div id="login-section" class="container">
 
-    <div class="card">
+    <div id="login-section" class="container">
 
-        <h1>Smart Matatu</h1>
+        <div class="card">
 
-        <h2>System Login</h2>
+            <h1>Smart Matatu</h1>
 
-        <p>Enter your account credentials to continue.</p>
+            <h2>System Login</h2>
 
-        <form id="login-form">
+            <p>Enter your account credentials to continue.</p>
 
-            <label for="login-username">Username:</label>
+            <form id="login-form">
 
-            <input
-                type="text"
-                id="login-username"
-                placeholder="Enter username"
-                required
-            >
+                <label for="login-username">Username:</label>
 
-            <label for="login-password">Password:</label>
+                <input
+                    type="text"
+                    id="login-username"
+                    placeholder="Enter username"
+                    required
+                >
 
-            <input
-                type="password"
-                id="login-password"
-                placeholder="Enter password"
-                required
-            >
+                <label for="login-password">Password:</label>
 
-            <button
-                type="submit"
-                id="login-button"
-                class="primary-button"
-            >
-                Login
-            </button>
+                <input
+                    type="password"
+                    id="login-password"
+                    placeholder="Enter password"
+                    required
+                >
 
-            <p id="login-message" role="alert"></p>
+                <button
+                    type="submit"
+                    id="login-button"
+                    class="primary-button"
+                >
+                    Login
+                </button>
 
-        </form>
+                <p id="login-message" role="alert"></p>
 
+            </form>
+
+        </div>
+
+    </div>
+
+
+    <div id="dashboard-section" hidden>
+
+        <div class="app-layout">
+
+            <aside class="sidebar">
+
+                <h2>SMART MATATU</h2>
+
+                <p style="color: #aabbd0;">
+                    Management System
+                </p>
+
+                <nav class="sidebar-nav">
+
+                    <a href="#dashboard-kpis" class="active">
+                        Dashboard
+                    </a>
+
+                    <a href="#fare-collection">
+                        Fare Collection
+                    </a>
+
+                    <a href="#transaction-history">
+                        Transactions
+                    </a>
+
+                    <a href="#revenue-summary">
+                        Revenue Reports
+                    </a>
+
+                    <a href="#user-management">
+                        Users
+                    </a>
+
+                    <a href="#user-profile">
+                        My Profile
+                    </a>
+
+                </nav>
+
+            </aside>
+
+            <main class="main-content">
+
+
+                <div class="topbar">
+
+                    <div>
+
+                        <h1>Dashboard Overview</h1>
+
+                        <p>
+                            Smart Matatu Management System
+                        </p>
+
+                    </div>
+
+                    <button
+                        type="button"
+                        id="logout-button"
+                        class="primary-button"
+                    >
+                        Logout
+                    </button>
+
+                </div>
+
+                <section id="fare-collection">
+
+                    <h2>Fare Collection</h2>
+
+                    <p>Record a passenger fare.</p>
+
+                    <label for="fare">
+                        Fare Amount:
+                    </label>
+
+                    <input
+                        type="number"
+                        id="fare"
+                        name="fare"
+                        placeholder="Enter fare"
+                    >
+
+                    <div class="form-group">
+
+                        <label for="passengers">
+                            Passenger Count:
+                        </label>
+
+                        <input
+                            type="number"
+                            id="passengers"
+                            name="passengers"
+                            value="1"
+                            min="1"
+                        >
+
+                    </div>
+
+                    <div class="total-fare">
+
+                        <span>Total fare:</span>
+
+                        <strong id="total-fare">
+                            KSh 0
+                        </strong>
+
+                    </div>
+
+                    <h3>Payment Method</h3>
+
+                    <div class="payment-methods">
+
+                        <button
+                            type="button"
+                            class="payment-button"
+                            data-method="mpesa"
+                        >
+                            M-Pesa
+                        </button>
+
+                        <button
+                            type="button"
+                            class="payment-button"
+                            data-method="cash"
+                        >
+                            Cash
+                        </button>
+
+                        <button
+                            type="button"
+                            class="payment-button"
+                            data-method="ussd"
+                        >
+                            USSD
+                        </button>
+
+                    </div>
+
+                    <p id="selected-methods">
+                        No Payment Method selected
+                    </p>
+
+                    <button
+                        type="button"
+                        id="confirm-button"
+                        class="primary-button"
+                    >
+                        Confirm Payment
+                    </button>
+
+
+                    <div
+                        id="payment-result"
+                        class="payment-result"
+                    >
+
+                        <div class="success-icon"></div>
+
+                        <h2>Payment successful!</h2>
+
+                        <p id="transaction-message">
+                            Your payment has been successfully recorded.
+                        </p>
+
+                        <div class="transaction-details">
+
+                            <p>
+                                Transaction ID:
+                                <span id="transaction-id"></span>
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                </section>
+
+                <section
+                    id="transaction-history"
+                    class="transaction-history"
+                >
+
+                    <h3>Transaction History</h3>
+
+                    <label for="transaction-search">
+                        Search transactions:
+                    </label>
+
+                    <input
+                        type="search"
+                        id="transaction-search"
+                        placeholder="Search by ID, method, or status"
+                    >
+
+                    <div class="transaction-filter">
+
+                        <label for="payment-filter">
+                            Payment Method
+                        </label>
+
+                        <select id="payment-filter">
+
+                            <option value="all">
+                                All Payment Methods
+                            </option>
+
+                            <option value="mpesa">
+                                M-Pesa
+                            </option>
+
+                            <option value="cash">
+                                Cash
+                            </option>
+
+                            <option value="ussd">
+                                USSD
+                            </option>
+
+                        </select>
+
+                    </div>
+
+                    <table>
+
+                        <thead>
+
+                            <tr>
+                                <th>Transaction ID</th>
+                                <th>Fare Amount</th>
+                                <th>Passenger Count</th>
+                                <th>Total Fare</th>
+                                <th>Payment Method</th>
+                                <th>Payment Status</th>
+                                <th>Date</th>
+                                <th>Time</th>
+                            </tr>
+
+                        </thead>
+
+                        <tbody id="transaction-list">
+                        </tbody>
+
+                    </table>
+
+                </section>
+
+                <section
+                    id="revenue-summary"
+                    class="revenue-summary"
+                >
+
+                    <h4>Revenue Summary</h4>
+
+                    <div class="revenue-card">
+
+                        <span>Total Revenue</span>
+
+                        <strong id="total-revenue">
+                            KSh 0.00
+                        </strong>
+
+                    </div>
+
+                    <div class="revenue-card">
+
+                        <span>Total Transactions</span>
+
+                        <strong id="total-transactions">
+                            0
+                        </strong>
+
+                    </div>
+
+                    <div class="revenue-card">
+
+                        <span>Total Passengers</span>
+
+                        <strong id="total-passengers">
+                            0
+                        </strong>
+
+                    </div>
+
+                    <div class="revenue-card">
+
+                        <span>Average Fare</span>
+
+                        <strong id="average-fare">
+                            KSh 0.00
+                        </strong>
+
+                    </div>
+
+                    <div class="revenue-card">
+
+                        <span>M-Pesa Revenue</span>
+
+                        <strong id="mpesa-revenue">
+                            KSh 0.00
+                        </strong>
+
+                    </div>
+
+                    <div class="revenue-card">
+
+                        <span>Cash Revenue</span>
+
+                        <strong id="cash-revenue">
+                            KSh 0.00
+                        </strong>
+
+                    </div>
+
+                    <div class="revenue-card">
+
+                        <span>USSD Revenue</span>
+
+                        <strong id="ussd-revenue">
+                            KSh 0.00
+                        </strong>
+
+                    </div>
+
+                </section>
+
+
+               
+
+                <section
+                    id="dashboard-kpis"
+                    class="dashboard-kpis"
+                >
+
+                    <h2>Revenue Dashboard</h2>
+
+                    <div class="kpi-grid">
+
+                        <div class="kpi-card">
+
+                            <h3>Total Revenue</h3>
+
+                            <p id="kpi-total-revenue">
+                                KSh 0.00
+                            </p>
+
+                        </div>
+
+                        <div class="kpi-card">
+
+                            <h3>Total Transactions</h3>
+
+                            <p id="kpi-total-transactions">
+                                0
+                            </p>
+
+                        </div>
+
+                        <div class="kpi-card">
+
+                            <h3>Total Passengers</h3>
+
+                            <p id="kpi-total-passengers">
+                                0
+                            </p>
+
+                        </div>
+
+                        <div class="kpi-card">
+
+                            <h3>Average Fare</h3>
+
+                            <p id="kpi-average-fare">
+                                KSh 0.00
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                    <h3 class="payment-summary-title">
+                        Payment Method Revenue
+                    </h3>
+
+                    <div class="kpi-grid">
+
+                        <div class="kpi-card">
+
+                            <h3>M-Pesa Revenue</h3>
+
+                            <p id="kpi-mpesa">
+                                KSh 0.00
+                            </p>
+
+                        </div>
+
+                        <div class="kpi-card">
+
+                            <h3>Cash Revenue</h3>
+
+                            <p id="kpi-cash">
+                                KSh 0.00
+                            </p>
+
+                        </div>
+
+                        <div class="kpi-card">
+
+                            <h3>USSD Revenue</h3>
+
+                            <p id="kpi-ussd">
+                                KSh 0.00
+                            </p>
+
+                        </div>
+
+                    </div>
+
+<div class="analytics-grid">
+
+    <div class="analytics-card">
+        <h3>Revenue Trends</h3>
+        <p>Revenue performance over time</p>
+        <canvas id="revenue-trend-chart"></canvas>
+    </div>
+
+    <div class="analytics-card">
+        <h3>Payment Methods</h3>
+        <p>Revenue distribution by payment type</p>
+        <canvas id="payment-method-chart"></canvas>
+    </div>
+
+    <div class="analytics-card">
+        <h3>Transactions by Route</h3>
+        <p>Route performance analysis</p>
+        <canvas id="route-performance-chart"></canvas>
     </div>
 
 </div>
+                </section>
 
-<div id ="dashboard-section" hidden>
 
-    <h1>Smart Matatu</h1>
+            </main>
 
-<h2>Fare Collection</h2>
-
-<p>Record a passenger fare.</p>
-
-<label for="fare">Fare Amount:</label>
-
-<input 
-    type="number" 
-    id="fare" 
-    name="fare"
-    placeholder="Enter fare"
->
-<div class="form-group">
-<label for="passengers">passenger count:</label>
-
-<input
-    type="number"
-    id="passengers"
-    name="passengers"
-    value="1"
-    min="1"
-></div>
-<div class="total-fare">
-    <span>Total fare: </span><strong id="total-fare">ksh 0</strong>
-</div>
-<h3>Payment Method</h3>
-<div class="payment-methods">
-    <button type="button" class="payment-button" data-method="mpesa">M-Pesa</button>
-    <button type="button" class="payment-button" data-method="cash">Cash</button>
-    <button type="button" class="payment-button" data-method="ussd">USSD</button>
-</div>
-
-<p id="selected-methods">No Payment Method selected</p>
-<br><br>
-<button type="button" id="confirm-button" class="primary-button">
-    Confirm Payment
-</button>
-
-<!PAYMENT RESULT>
-<div id="payment-result"
-class="payment-result">
-<div class="success-icon"></div>
-<h2>Payment successful!</h2>
-
-<p id="transaction-message">your payment has been succesfully recorded</p>
-<div class="transaction-details">
-<p>Transaction ID: <span id="transaction-id"></span></p>
-</div>
-</div>
-
-<section class="transaction-history">
-    <h3>Transaction history</h3>
-    <label for="transaction-search">Search transactions:</label>
-    <input
-        type="search"
-        id="transaction-search"
-        placeholder="Search by ID, method, or status"
-    >
-    
-<div class="transaction-filter">
-
-    <label for="payment-filter">
-        Payment Method
-    </label>
-
-    <select id="payment-filter">
-
-        <option value="all">
-            All Payment Methods
-        </option>
-
-        <option value="mpesa">
-            M-Pesa
-        </option>
-
-        <option value="cash">
-            Cash
-        </option>
-
-        <option value="ussd">
-            USSD
-        </option>
-
-    </select>
-
-</div>
-    <table>
-        <thead>
-            <tr>
-                <th>Transaction ID</th>
-                <th>Fare Amount</th>
-                <th>Passenger Count</th>
-                <th>Total Fare</th>
-                <th>Payment Method</th>
-                <th>Payment Status</th>
-                <th>Date</th>
-                <th>Time</th>
-            </tr>
-        </thead>
-        <tbody id="transaction-list">
-        </tbody>
-    </table>
-</section>
-
-<section class="revenue-summary">
-    <h4>Revenue Summary</h4>
-    <div class="revenue-card">
-        <span>Total Revenue</span>
-        <strong id="total-revenue">KSh 0.00</strong>
-    </div>
-    <div class="revenue-card">
-        <span>Total Transactions</span>
-        <strong id="total-transactions">0</strong>
-    </div>
-    <div class="revenue-card">
-        <span>Total Passengers</span>
-        <strong id="total-passengers">0</strong>
-    </div>
-    <div class="revenue-card">
-        <span>Average Fare </span>
-        <strong id="average-fare">KSh 0.00</strong>
-    </div>
-    <div class="revenue-card">
-        <span>M-Pesa Revenue</span>
-        <strong id="mpesa-revenue">KSh 0.00</strong>
-    </div>
-    <div class="revenue-card">
-        <span>Cash Revenue</span>
-        <strong id="cash-revenue">KSh 0.00</strong>
-    </div>
-    <div class="revenue-card">
-        <span>USSD Revenue</span>
-        <strong id="ussd-revenue">KSh 0.00</strong>
-    </div>
-</section>
-
-<section class="dashboard-kpis">
-
-    <h2>Revenue Dashboard</h2>
-
-    <div class="kpi-grid">
-
-        <div class="kpi-card">
-            <h3>Total Revenue</h3>
-            <p id="kpi-total-revenue">KSh 0.00</p>
-        </div>
-
-        <div class="kpi-card">
-            <h3>Total Transactions</h3>
-            <p id="kpi-total-transactions">0</p>
-        </div>
-
-        <div class="kpi-card">
-            <h3>Total Passengers</h3>
-            <p id="kpi-total-passengers">0</p>
-        </div>
-
-        <div class="kpi-card">
-            <h3>Average Fare</h3>
-            <p id="kpi-average-fare">KSh 0.00</p>
         </div>
 
     </div>
 
-    <h3 class="payment-summary-title">
-        Payment Method Revenue
-    </h3>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="script.js"></script>
 
-    <div class="kpi-grid">
-
-        <div class="kpi-card">
-            <h3>M-Pesa Revenue</h3>
-            <p id="kpi-mpesa">KSh 0.00</p>
-        </div>
-
-        <div class="kpi-card">
-            <h3>Cash Revenue</h3>
-            <p id="kpi-cash">KSh 0.00</p>
-        </div>
-
-        <div class="kpi-card">
-            <h3>USSD Revenue</h3>
-            <p id="kpi-ussd">KSh 0.00</p>
-        </div>
-
-    </div>
-
-</section>
-</div>       
-<script src="script.js"></script>
 </body>
 
 </html>
