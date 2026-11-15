@@ -48,6 +48,7 @@ let selectedpaymentMethod = null;
 let isSubmittingPayment = false;
 let transactions = [];
 let revenueTrendChart = null;
+let paymentMethodChart = null;
 try {
     const savedTransactions = JSON.parse(
         localStorage.getItem(STORAGE_KEY) || "[]"
@@ -486,6 +487,7 @@ function updateRevenueTrendChart() {
         }
     });
 }
+
 function updateDashboardKPIs() {
     const totalRevenue = transactions.reduce(function (sum, transaction) {
         return sum + Number(transaction.total || 0);
@@ -729,7 +731,6 @@ if (!response.ok || data.status !== "success" || !data.transaction) {
 }
 
 
-
 async function loadTransactionsFromBackend() {
     try {
         const token = sessionStorage.getItem("authToken");
@@ -790,6 +791,7 @@ async function loadTransactionsFromBackend() {
         saveTransactions();
         displayTransactions();
         updateDashboardSummary();
+        initializePaymentMethodChart();
 
         console.log(
             "Transactions loaded from backend:",
@@ -804,10 +806,86 @@ async function loadTransactionsFromBackend() {
 
         displayTransactions();
         updateDashboardSummary();
+        initializePaymentMethodChart();
 
         console.log("Showing locally saved transactions.");
     }
 }
+
+function initializePaymentMethodChart() {
+
+    const canvas = document.getElementById("payment-method-chart");
+
+    if (!canvas) {
+        console.error("Payment chart canvas not found.");
+        return;
+    }
+const normalizePaymentMethod = (method) => {
+    return String(method || "")
+        .toLowerCase()
+        .replace(/[^a-z]/g, "");
+};
+
+const mpesaRevenue = transactions
+    .filter(t => normalizePaymentMethod(t.paymentmethod) === "mpesa")
+    .reduce((sum, t) => sum + Number(t.total || 0), 0);
+
+const cashRevenue = transactions
+    .filter(t => normalizePaymentMethod(t.paymentmethod) === "cash")
+    .reduce((sum, t) => sum + Number(t.total || 0), 0);
+
+const ussdRevenue = transactions
+    .filter(t => normalizePaymentMethod(t.paymentmethod) === "ussd")
+    .reduce((sum, t) => sum + Number(t.total || 0), 0);
+
+    if (paymentMethodChart) {
+        paymentMethodChart.destroy();
+    }
+
+    paymentMethodChart = new Chart(canvas, {
+
+        type: "doughnut",
+
+        data: {
+            labels: ["M-Pesa", "Cash", "USSD"],
+
+            datasets: [{
+                label: "Revenue (KSh)",
+                data: [
+                    mpesaRevenue,
+                    cashRevenue,
+                    ussdRevenue
+                ],
+                backgroundColor: [
+                    "#16a34a",
+                    "#2563eb",
+                    "#f59e0b"
+                ],
+                borderWidth: 2
+            }]
+        },
+
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+
+            plugins: {
+                legend: {
+                    position: "bottom"
+                }
+            }
+        }
+    });
+
+    console.log("Payment method chart initialized.");
+
+    console.log("Payment revenue:", {
+        mpesaRevenue,
+        cashRevenue,
+        ussdRevenue
+    });
+}
+
 if (loginForm) {
     loginForm.addEventListener("submit", async function (event) {
         event.preventDefault();

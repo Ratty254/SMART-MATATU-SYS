@@ -508,3 +508,207 @@ html {
 section[id] {
     scroll-margin-top: 20px;
 } 
+
+
+#dashboard-section {
+    max-width: none;
+    padding: 0;
+}
+
+.app-layout {
+    width: 100%;
+    min-height: 100vh;
+    align-items: stretch;
+}
+
+.sidebar {
+    flex: 0 0 250px;
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    overflow-y: auto;
+    box-shadow: 3px 0 15px rgba(0, 0, 0, 0.08);
+}
+
+.sidebar-nav {
+    margin-top: 35px;
+}
+
+.sidebar-nav a {
+    padding: 14px 16px;
+    margin-bottom: 9px;
+    border-radius: 9px;
+    font-size: 14px;
+    transition: all 0.2s ease;
+}
+
+.sidebar-nav a:hover {
+    padding-left: 21px;
+    background: #315b89;
+}
+
+.sidebar-nav a.active {
+    background: #3478b9;
+    color: white;
+    font-weight: bold;
+}
+
+.main-content {
+    flex: 1;
+    min-width: 0;
+    padding: 30px;
+    background: var(--background);
+}
+
+.topbar {
+    padding: 15px 0 22px;
+    margin-bottom: 30px;
+}
+
+.topbar h1 {
+    font-size: 28px;
+    font-weight: 700;
+}
+
+
+#fare-collection {
+    padding: 25px;
+    margin-bottom: 25px;
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    box-shadow: var(--shadow);
+}
+
+
+.dashboard-kpis {
+    margin-top: 25px;
+    padding: 25px;
+}
+
+.kpi-grid {
+    grid-template-columns: repeat(
+        auto-fit,
+        minmax(190px, 1fr)
+    );
+    gap: 20px;
+}
+
+.kpi-card {
+    min-width: 0;
+    padding: 24px;
+    border-radius: 12px;
+    transition: transform 0.2s ease,
+                box-shadow 0.2s ease;
+}
+
+.kpi-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 22px rgba(20, 36, 59, 0.12);
+}
+
+
+
+.analytics-grid {
+    display: grid;
+    grid-template-columns: repeat(
+        2,
+        minmax(0, 1fr)
+    );
+    gap: 22px;
+    margin-top: 30px;
+}
+
+.analytics-card {
+    min-width: 0;
+    padding: 24px;
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    box-shadow: var(--shadow);
+}
+
+.analytics-card h3 {
+    margin-top: 0;
+    margin-bottom: 8px;
+    color: var(--navy);
+}
+
+.analytics-card canvas {
+    width: 100% !important;
+    max-height: 320px;
+}
+
+
+
+.transaction-history {
+    margin-top: 25px;
+}
+
+.transaction-history input {
+    margin-bottom: 15px;
+}
+
+.transaction-history table {
+    margin-top: 20px;
+}
+
+@media (max-width: 900px) {
+
+    .app-layout {
+        flex-direction: column;
+    }
+
+    .sidebar {
+        position: relative;
+        width: 100%;
+        height: auto;
+        flex: auto;
+    }
+
+    .sidebar-nav {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-top: 20px;
+    }
+
+    .sidebar-nav a {
+        margin: 0;
+        flex: 1 1 140px;
+    }
+
+    .main-content {
+        padding: 22px;
+    }
+
+    .analytics-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 600px) {
+
+    .main-content {
+        padding: 15px;
+    }
+
+    #fare-collection,
+    .dashboard-kpis,
+    .transaction-history,
+    .revenue-summary {
+        padding: 17px;
+    }
+
+    .topbar h1 {
+        font-size: 23px;
+    }
+
+    .analytics-card {
+        padding: 16px;
+    }
+
+    .kpi-grid {
+        grid-template-columns: 1fr;
+    }
+}
