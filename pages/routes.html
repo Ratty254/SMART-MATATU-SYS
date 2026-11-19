@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta
+        name="description"
+        content="Manage, review, approve and reject Smart Matatu routes."
+    >
+
+    <title>Route Management | Smart Matatu</title>
+
+    <link rel="stylesheet" href="../css/style.css">
+
+    <script src="../js/api.js" defer></script>
+    <script src="../js/auth.js" defer></script>
+    <script src="../js/app-shell.js" defer></script>
+    <script src="../js/routes.js" defer></script>
+</head>
+
+<body class="app-page">
+
+    <div class="app-layout">
+
+
+        <aside class="app-sidebar">
+
+            <div class="sidebar-brand">
+                <a href="../index.html">
+                    SMART <span>MATATU</span>
+                </a>
+            </div>
+
+            <div class="sidebar-user">
+
+                <div class="user-avatar">
+                    <span>SM</span>
+                </div>
+
+                <div class="user-details">
+
+                    <strong id="current-user-name">
+                        System User
+                    </strong>
+
+                    <small id="current-user-role">
+                        User
+                    </small>
+
+                </div>
+
+            </div>
+
+            <nav class="sidebar-navigation">
+
+                <p class="sidebar-heading">MAIN MENU</p>
+
+                <a href="dashboard.html">
+                    <span>▦</span>
+                    Dashboard
+                </a>
+
+                <a href="fare-collection.html">
+                    <span>▤</span>
+                    Fare Collection
+                </a>
+
+                <a href="transactions.html">
+                    <span>⇄</span>
+                    Transactions
+                </a>
+
+                <a href="revenue-reports.html">
+                    <span>▥</span>
+                    Revenue Reports
+                </a>
+
+                <p class="sidebar-heading">MANAGEMENT</p>
+
+                <a
+                    href="routes.html"
+                    data-page="routes"
+                    id="routes-navigation-link"
+                    class="active"
+                >
+                    <span>⇄</span>
+                    Route Management
+                </a>
+
+                <a
+                    href="users.html"
+                    data-page="users"
+                    id="users-navigation-link"
+                >
+                    <span>♙</span>
+                    User Management
+                </a>
+
+                <a href="profile.html">
+                    <span>⚙</span>
+                    My Profile
+                </a>
+
+            </nav>
+
+            <div class="sidebar-bottom">
+
+                <button
+                    type="button"
+                    id="logout-button"
+                    class="logout-button"
+                >
+                    <span>↪</span>
+                    Sign Out
+                </button>
+
+            </div>
+
+        </aside>
+
+
+       
+
+        <main class="app-main">
+
+
+            <header class="app-topbar">
+
+                <div>
+
+                    <p class="topbar-eyebrow">
+                        SMART MATATU SYSTEM
+                    </p>
+
+                    <h1>Route Management</h1>
+
+                </div>
+
+                <div class="topbar-user">
+
+                    <span>Welcome,</span>
+
+                    <strong id="logged-in-username">
+                        System User
+                    </strong>
+
+                </div>
+
+            </header>
+
+
+            <div class="dashboard-content">
+
+
+                <section class="dashboard-intro">
+
+                    <div>
+
+                        <h2>Route Verification Centre</h2>
+
+                        <p>
+                            Review routes registered by SACCOs.
+                            Approve valid routes or reject routes
+                            that do not meet verification requirements.
+                        </p>
+
+                    </div>
+
+                    <button
+                        type="button"
+                        id="refresh-routes-button"
+                        class="btn btn-primary"
+                    >
+                        ↻ Refresh Routes
+                    </button>
+
+                </section>
+
+
+                <section class="kpi-grid">
+
+                    <article class="kpi-card">
+
+                        <div class="kpi-icon">
+                            ⇄
+                        </div>
+
+                        <div class="kpi-details">
+
+                            <p>Total Routes</p>
+
+                            <h2 id="total-routes">
+                                0
+                            </h2>
+
+                            <small>
+                                Registered system routes
+                            </small>
+
+                        </div>
+
+                    </article>
+
+
+                    <article class="kpi-card">
+
+                        <div class="kpi-icon">
+                            !
+                        </div>
+
+                        <div class="kpi-details">
+
+                            <p>Pending Verification</p>
+
+                            <h2 id="pending-routes">
+                                0
+                            </h2>
+
+                            <small>
+                                Awaiting administrator review
+                            </small>
+
+                        </div>
+
+                    </article>
+
+
+                    <article class="kpi-card">
+
+                        <div class="kpi-icon">
+                            ✓
+                        </div>
+
+                        <div class="kpi-details">
+
+                            <p>Approved Routes</p>
+
+                            <h2 id="approved-routes">
+                                0
+                            </h2>
+
+                            <small>
+                                Verified routes
+                            </small>
+
+                        </div>
+
+                    </article>
+
+
+                    <article class="kpi-card">
+
+                        <div class="kpi-icon">
+                            ✕
+                        </div>
+
+                        <div class="kpi-details">
+
+                            <p>Rejected Routes</p>
+
+                            <h2 id="rejected-routes">
+                                0
+                            </h2>
+
+                            <small>
+                                Routes not approved
+                            </small>
+
+                        </div>
+
+                    </article>
+
+                </section>
+
+
+                <section class="revenue-summary">
+
+                    <div class="section-heading">
+
+                        <div>
+
+                            <h2>Administrator Responsibilities</h2>
+
+                            <p>
+                                Route verification controls which routes
+                                can be used for fare collection.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                    <div class="revenue-method-grid">
+
+                        <article class="revenue-method-card">
+
+                            <span>Pending</span>
+
+                            <strong>
+                                Awaiting Review
+                            </strong>
+
+                        </article>
+
+                        <article class="revenue-method-card">
+
+                            <span>Approved</span>
+
+                            <strong>
+                                Available for Transactions
+                            </strong>
+
+                        </article>
+
+                        <article class="revenue-method-card">
+
+                            <span>Rejected</span>
+
+                            <strong>
+                                Unavailable for Transactions
+                            </strong>
+
+                        </article>
+
+                    </div>
+
+                </section>
+
+
+
+                <section class="recent-transactions">
+
+                    <div class="section-heading">
+
+                        <div>
+
+                            <h2>Registered Routes</h2>
+
+                            <p>
+                                Review route details and manage
+                                verification decisions.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="route-controls">
+
+                        <div class="route-search">
+
+                            <label for="route-search">
+                                Search Routes
+                            </label>
+
+                            <input
+                                type="search"
+                                id="route-search"
+                                placeholder="Search route code, route name or SACCO..."
+                            >
+
+                        </div>
+
+
+                        <div class="route-filter">
+
+                            <label for="verification-filter">
+                                Verification Status
+                            </label>
+
+                            <select id="verification-filter">
+
+                                <option value="all">
+                                    All Routes
+                                </option>
+
+                                <option value="pending">
+                                    Pending
+                                </option>
+
+                                <option value="approved">
+                                    Approved
+                                </option>
+
+                                <option value="rejected">
+                                    Rejected
+                                </option>
+
+                            </select>
+
+                        </div>
+
+                    </div>
+
+
+                
+
+                    <div
+                        id="routes-message"
+                        class="auth-message"
+                        role="status"
+                        aria-live="polite"
+                        style="display: none;"
+                    ></div>
+
+
+
+                    <div class="table-responsive">
+
+                        <table class="transactions-table">
+
+                            <thead>
+
+                                <tr>
+
+                                    <th>Route Code</th>
+
+                                    <th>Route Name</th>
+
+                                    <th>Origin</th>
+
+                                    <th>Destination</th>
+
+                                    <th>SACCO</th>
+
+                                    <th>Route Status</th>
+
+                                    <th>Verification</th>
+
+                                    <th>Actions</th>
+
+                                </tr>
+
+                            </thead>
+
+
+                            <tbody id="routes-table-body">
+
+                                <tr>
+
+                                    <td colspan="8">
+                                        Loading registered routes...
+                                    </td>
+
+                                </tr>
+
+                            </tbody>
+
+                        </table>
+
+                    </div>
+
+                </section>
+
+
+            
+
+                <section class="dashboard-footer">
+
+                    <p>
+                        Smart Matatu System |
+                        Route Registration and Verification
+                    </p>
+
+                    <span id="routes-last-updated">
+                        Awaiting route data...
+                    </span>
+
+                </section>
+
+            </div>
+
+        </main>
+
+    </div>
+
+</body>
+
+</html>

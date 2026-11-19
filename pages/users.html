@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta
+        name="description"
+        content="Administrator user management for the Smart Matatu System."
+    >
+
+    <title>User Management | Smart Matatu</title>
+
+    <link rel="stylesheet" href="../css/style.css">
+
+    <script defer src="../js/api.js"></script>
+    <script defer src="../js/auth.js"></script>
+    <script defer src="../js/app-shell.js"></script>
+    <script defer src="../js/users.js"></script>
+</head>
+
+<body class="app-page">
+
+    <div class="app-layout">
+
+        <aside class="app-sidebar">
+
+            <div class="sidebar-brand">
+                <a href="../index.html">
+                    SMART <span>MATATU</span>
+                </a>
+            </div>
+
+
+            <div class="sidebar-user">
+
+                <div class="user-avatar">
+                    <span>SM</span>
+                </div>
+
+                <div class="user-details">
+
+                    <strong id="current-user-name">
+                        Loading user...
+                    </strong>
+
+                    <small id="current-user-role">
+                        Loading role...
+                    </small>
+
+                </div>
+
+            </div>
+
+            <nav class="sidebar-navigation">
+
+                <p class="sidebar-heading">MAIN MENU</p>
+
+                <a href="dashboard.html">
+                    <span>▦</span>
+                    Dashboard
+                </a>
+
+                <a href="fare-collection.html">
+                    <span>▤</span>
+                    Fare Collection
+                </a>
+
+                <a href="transactions.html">
+                    <span>⇄</span>
+                    Transactions
+                </a>
+
+                <a href="revenue-reports.html">
+                    <span>▥</span>
+                    Revenue Reports
+                </a>
+
+
+                <p class="sidebar-heading">MANAGEMENT</p>
+
+                <a
+                    href="users.html"
+                    class="active admin-only"
+                    data-page="users"
+                    id="users-navigation-link"
+                >
+                    <span>♙</span>
+                    User Management
+                </a>
+
+                <a href="profile.html">
+                    <span>⚙</span>
+                    My Profile
+                </a>
+
+            </nav>
+
+
+            <div class="sidebar-bottom">
+
+                <button
+                    type="button"
+                    id="logout-button"
+                    class="logout-button"
+                >
+                    <span>↪</span>
+                    Sign Out
+                </button>
+
+            </div>
+
+        </aside>
+
+
+        <main class="app-main">
+
+
+            <header class="app-topbar">
+
+                <div>
+
+                    <p class="topbar-eyebrow">
+                        SMART MATATU SYSTEM
+                    </p>
+
+                    <h1>User Management</h1>
+
+                </div>
+
+
+                <div class="topbar-user">
+
+                    <span>Welcome,</span>
+
+                    <strong id="logged-in-username">
+                        System User
+                    </strong>
+
+                </div>
+
+            </header>
+
+
+            
+            <div class="dashboard-content">
+
+
+                <section class="dashboard-intro">
+
+                    <div>
+
+                        <h2>System Accounts</h2>
+
+                        <p>
+                            Monitor registered users, approve new accounts
+                            and manage access to the Smart Matatu System.
+                        </p>
+
+                    </div>
+
+
+                    <button
+                        type="button"
+                        id="refresh-users"
+                        class="btn btn-primary"
+                    >
+                        ↻ Refresh Users
+                    </button>
+
+                </section>
+
+
+                <!-- USER FEEDBACK -->
+                <div
+                    id="users-message"
+                    class="message-box"
+                    role="status"
+                    aria-live="polite"
+                ></div>
+
+                <section class="kpi-grid">
+
+
+                    <article class="kpi-card">
+
+                        <div class="kpi-icon">
+                            ♙
+                        </div>
+
+                        <div class="kpi-details">
+
+                            <p>Total Users</p>
+
+                            <h2 id="total-users">0</h2>
+
+                            <small>Registered accounts</small>
+
+                        </div>
+
+                    </article>
+
+
+                    <article class="kpi-card">
+
+                        <div class="kpi-icon">
+                            ✓
+                        </div>
+
+                        <div class="kpi-details">
+
+                            <p>Active Accounts</p>
+
+                            <h2 id="active-users">0</h2>
+
+                            <small>Approved accounts</small>
+
+                        </div>
+
+                    </article>
+
+
+                    <article class="kpi-card">
+
+                        <div class="kpi-icon">
+                            ◷
+                        </div>
+
+                        <div class="kpi-details">
+
+                            <p>Pending Accounts</p>
+
+                            <h2 id="pending-users">0</h2>
+
+                            <small>Awaiting approval</small>
+
+                        </div>
+
+                    </article>
+
+
+                    <article class="kpi-card">
+
+                        <div class="kpi-icon">
+                            !
+                        </div>
+
+                        <div class="kpi-details">
+
+                            <p>Suspended Accounts</p>
+
+                            <h2 id="suspended-users">0</h2>
+
+                            <small>Restricted accounts</small>
+
+                        </div>
+
+                    </article>
+
+
+                    <article class="kpi-card">
+
+                        <div class="kpi-icon">
+                            ★
+                        </div>
+
+                        <div class="kpi-details">
+
+                            <p>Administrators</p>
+
+                            <h2 id="admin-users">0</h2>
+
+                            <small>Administrator accounts</small>
+
+                        </div>
+
+                    </article>
+
+
+                </section>
+
+
+                <!-- SEARCH AND FILTERS -->
+                <section class="content-panel">
+
+                    <div class="panel-heading">
+
+                        <div>
+
+                            <h2>Find Users</h2>
+
+                            <p>
+                                Search registered accounts or filter
+                                users by role and account status.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="transaction-filter-grid">
+
+
+                        <div class="form-group">
+
+                            <label for="user-search">
+                                Search Users
+                            </label>
+
+                            <input
+                                type="search"
+                                id="user-search"
+                                placeholder="Search username or email..."
+                            >
+
+                        </div>
+
+
+                        <div class="form-group">
+
+                            <label for="user-role-filter">
+                                Account Role
+                            </label>
+
+                            <select id="user-role-filter">
+
+                                <option value="">
+                                    All Roles
+                                </option>
+
+                                <option value="admin">
+                                    Administrator
+                                </option>
+
+                                <option value="sacco_manager">
+                                    SACCO Manager
+                                </option>
+
+                                <option value="conductor">
+                                    Conductor
+                                </option>
+
+                            </select>
+
+                        </div>
+
+
+                        <div class="form-group">
+
+                            <label for="user-status-filter">
+                                Account Status
+                            </label>
+
+                            <select id="user-status-filter">
+
+                                <option value="">
+                                    All Statuses
+                                </option>
+
+                                <option value="active">
+                                    Active
+                                </option>
+
+                                <option value="pending">
+                                    Pending Approval
+                                </option>
+
+                                <option value="suspended">
+                                    Suspended
+                                </option>
+
+                            </select>
+
+                        </div>
+
+
+                        <div class="filter-actions">
+
+                            <button
+                                type="button"
+                                id="apply-user-filters"
+                                class="btn btn-primary"
+                            >
+                                Apply Filters
+                            </button>
+
+                            <button
+                                type="button"
+                                id="clear-user-filters"
+                                class="btn btn-outline"
+                            >
+                                Clear Filters
+                            </button>
+
+                        </div>
+
+
+                    </div>
+
+                </section>
+
+                <section class="content-panel">
+
+                    <div class="panel-heading panel-heading-between">
+
+                        <div>
+
+                            <h2>Registered Accounts</h2>
+
+                            <p id="users-results-count">
+                                Registered system users
+                            </p>
+
+                        </div>
+
+                        <span class="table-record-label">
+                            Account Management
+                        </span>
+
+                    </div>
+
+
+                    <div class="table-responsive">
+
+                        <table class="transactions-table">
+
+                            <thead>
+
+                                <tr>
+                                    <th>User ID</th>
+                                    <th>Username</th>
+                                    <th>Email</th>
+                                    <th>Role</th>
+                                    <th>Status</th>
+                                    <th>Date Created</th>
+                                    <th>Actions</th>
+                                </tr>
+
+                            </thead>
+
+
+                            <tbody id="users-table-body">
+
+                                <tr>
+
+                                    <td colspan="7" class="empty-state">
+                                        Loading user accounts...
+                                    </td>
+
+                                </tr>
+
+                            </tbody>
+
+                        </table>
+
+                    </div>
+
+
+                    <div class="table-footer">
+
+                        <span id="users-last-updated">
+                            Last updated: Not yet loaded
+                        </span>
+
+                    </div>
+
+                </section>
+
+
+                <section class="content-panel">
+
+                    <div class="panel-heading">
+
+                        <div>
+
+                            <h2>Administrator Guidelines</h2>
+
+                            <p>
+                                Important controls for protecting
+                                system accounts and access.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="info-list">
+
+
+                        <p>
+
+                            <strong>Account approval:</strong>
+
+                            Newly registered accounts remain pending
+                            until an administrator approves them.
+
+                        </p>
+
+
+                        <p>
+
+                            <strong>Account suspension:</strong>
+
+                            Temporarily prevents a user from accessing
+                            the system without deleting their account
+                            or transaction history.
+
+                        </p>
+
+
+                        <p>
+
+                            <strong>Role management:</strong>
+
+                            Ensure users have the appropriate permissions
+                            according to their responsibilities.
+
+                        </p>
+
+
+                        <p>
+
+                            <strong>Administrator protection:</strong>
+
+                            Protect administrator accounts and maintain
+                            at least one active administrator.
+
+                        </p>
+
+
+                    </div>
+
+                </section>
+
+
+                <section class="dashboard-footer">
+
+                    <p>
+                        Smart Matatu System |
+                        Revenue Management and Verification
+                    </p>
+
+                    <span>
+                        User Administration
+                    </span>
+
+                </section>
+
+
+            </div>
+
+        </main>
+
+    </div>
+
+</body>
+</html>

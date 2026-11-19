@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta
+        name="description"
+        content="View, search and filter Smart Matatu System payment transactions."
+    >
+
+    <title>Transactions | Smart Matatu</title>
+
+    <link rel="stylesheet" href="../css/style.css">
+
+    <script src="../js/api.js" defer></script>
+    <script src="../js/auth.js" defer></script>
+    <script src="../js/app-shell.js" defer></script>
+    <script src="../js/transactions.js" defer></script>
+</head>
+
+<body class="app-page">
+
+    <div class="app-layout">
+
+        <aside class="app-sidebar">
+
+            <div class="sidebar-brand">
+                <a href="../index.html">
+                    SMART <span>MATATU</span>
+                </a>
+            </div>
+
+            <div class="sidebar-user">
+
+                <div class="user-avatar">
+                    <span>SM</span>
+                </div>
+
+                <div class="user-details">
+                    <strong id="current-user-name">
+                        System User
+                    </strong>
+
+                    <small id="current-user-role">
+                        User
+                    </small>
+                </div>
+
+            </div>
+
+            <nav class="sidebar-navigation">
+
+                <p class="sidebar-heading">MAIN MENU</p>
+
+                <a href="dashboard.html">
+                    <span>▦</span>
+                    Dashboard
+                </a>
+
+                <a href="fare-collection.html">
+                    <span>▤</span>
+                    Fare Collection
+                </a>
+
+                <a href="transactions.html" class="active">
+                    <span>⇄</span>
+                    Transactions
+                </a>
+
+                <a href="revenue-reports.html">
+                    <span>▥</span>
+                    Revenue Reports
+                </a>
+
+                <p class="sidebar-heading">MANAGEMENT</p>
+
+                <a
+                    href="users.html"
+                    data-page="users"
+                    id="users-navigation-link"
+                >
+                    <span>♙</span>
+                    User Management
+                </a>
+
+                <a href="profile.html">
+                    <span>⚙</span>
+                    My Profile
+                </a>
+
+            </nav>
+
+            <div class="sidebar-bottom">
+
+                <button
+                    type="button"
+                    id="logout-button"
+                    class="logout-button"
+                >
+                    <span>↪</span>
+                    Sign Out
+                </button>
+
+            </div>
+
+        </aside>
+
+
+
+        <main class="app-main">
+
+    
+            <header class="app-topbar">
+
+                <div>
+                    <p class="topbar-eyebrow">
+                        SMART MATATU SYSTEM
+                    </p>
+
+                    <h1>Transactions</h1>
+                </div>
+
+                <div class="topbar-user">
+
+                    <span>Welcome,</span>
+
+                    <strong id="logged-in-username">
+                        System User
+                    </strong>
+
+                </div>
+
+            </header>
+
+
+            
+            <div class="dashboard-content">
+
+                
+                <section class="dashboard-intro">
+
+                    <div>
+                        <h2>Transaction Records</h2>
+
+                        <p>
+                            Search, filter and inspect fare payment
+                            records stored in the system.
+                        </p>
+                    </div>
+
+                    <button
+                        type="button"
+                        id="refresh-transactions"
+                        class="btn btn-primary"
+                    >
+                        ↻ Refresh Records
+                    </button>
+
+                </section>
+
+                <section class="kpi-grid">
+
+                    <article class="kpi-card">
+
+                        <div class="kpi-icon">⇄</div>
+
+                        <div class="kpi-details">
+                            <p>Total Transactions</p>
+
+                            <h2 id="transaction-count">0</h2>
+
+                            <small>Recorded payments</small>
+                        </div>
+
+                    </article>
+
+
+                    <article class="kpi-card">
+
+                        <div class="kpi-icon">KSh</div>
+
+                        <div class="kpi-details">
+                            <p>Total Revenue</p>
+
+                            <h2 id="transaction-revenue">
+                                KSh 0.00
+                            </h2>
+
+                            <small>Recorded transaction value</small>
+                        </div>
+
+                    </article>
+
+
+                    <article class="kpi-card">
+
+                        <div class="kpi-icon">♙</div>
+
+                        <div class="kpi-details">
+                            <p>Total Passengers</p>
+
+                            <h2 id="transaction-passengers">0</h2>
+
+                            <small>Passengers recorded</small>
+                        </div>
+
+                    </article>
+
+
+                    <article class="kpi-card">
+
+                        <div class="kpi-icon">KSh</div>
+
+                        <div class="kpi-details">
+                            <p>Average Transaction</p>
+
+                            <h2 id="transaction-average">
+                                KSh 0.00
+                            </h2>
+
+                            <small>Average recorded payment</small>
+                        </div>
+
+                    </article>
+
+                </section>
+
+
+                <section class="content-panel">
+
+                    <div class="panel-heading">
+
+                        <div>
+                            <h2>Find Transactions</h2>
+
+                            <p>
+                                Use the filters below to narrow down
+                                transaction records.
+                            </p>
+                        </div>
+
+                    </div>
+
+                    <div
+                        id="transaction-message"
+                        class="message-box"
+                        role="status"
+                        aria-live="polite"
+                    ></div>
+
+
+                    <div class="transaction-filter-grid">
+
+                        <div class="form-group">
+                            <label for="transaction-search">
+                                Search Transactions
+                            </label>
+
+                            <input
+                                type="search"
+                                id="transaction-search"
+                                placeholder="Search transaction ID or route..."
+                            >
+                        </div>
+
+
+                        <div class="form-group">
+                            <label for="transaction-payment-filter">
+                                Payment Method
+                            </label>
+
+                            <select id="transaction-payment-filter">
+                                <option value="">All Payment Methods</option>
+                                <option value="M-Pesa">M-Pesa</option>
+                                <option value="Cash">Cash</option>
+                                <option value="USSD">USSD</option>
+                                <option value="QR">QR</option>
+                                <option value="Card">Card</option>
+                            </select>
+                        </div>
+
+
+                        <div class="form-group">
+                            <label for="transaction-status-filter">
+                                Payment Status
+                            </label>
+
+                            <select id="transaction-status-filter">
+                                <option value="">All Statuses</option>
+                                <option value="Paid">Paid</option>
+                                <option value="Pending">Pending</option>
+                                <option value="Failed">Failed</option>
+                                <option value="Flagged">Flagged</option>
+                            </select>
+                        </div>
+
+
+                        <div class="form-group">
+                            <label for="transaction-date-from">
+                                Date From
+                            </label>
+
+                            <input
+                                type="date"
+                                id="transaction-date-from"
+                            >
+                        </div>
+
+
+                        <div class="form-group">
+                            <label for="transaction-date-to">
+                                Date To
+                            </label>
+
+                            <input
+                                type="date"
+                                id="transaction-date-to"
+                            >
+                        </div>
+
+
+                        <div class="filter-actions">
+
+                            <button
+                                type="button"
+                                id="apply-transaction-filters"
+                                class="btn btn-primary"
+                            >
+                                Apply Filters
+                            </button>
+
+                            <button
+                                type="button"
+                                id="clear-transaction-filters"
+                                class="btn btn-outline"
+                            >
+                                Clear Filters
+                            </button>
+
+                        </div>
+
+                    </div>
+
+                </section>
+
+
+            
+                <section class="content-panel">
+
+                    <div class="panel-heading panel-heading-between">
+
+                        <div>
+                            <h2>All Transactions</h2>
+
+                            <p id="transaction-results-count">
+                                Showing recorded transactions
+                            </p>
+                        </div>
+
+                        <span class="table-record-label">
+                            Transaction History
+                        </span>
+
+                    </div>
+
+
+                    <div class="table-responsive">
+
+                        <table
+                            class="transactions-table"
+                            id="transactions-table"
+                        >
+
+                            <thead>
+                                <tr>
+                                    <th>Transaction ID</th>
+                                    <th>Route</th>
+                                    <th>Fare</th>
+                                    <th>Passengers</th>
+                                    <th>Total</th>
+                                    <th>Payment Method</th>
+                                    <th>Status</th>
+                                    <th>Date &amp; Time</th>
+                                </tr>
+                            </thead>
+
+
+                            <tbody id="transactions-table-body">
+
+                                <tr>
+                                    <td colspan="8" class="empty-state">
+                                        Loading transactions...
+                                    </td>
+                                </tr>
+
+                            </tbody>
+
+                        </table>
+
+                    </div>
+
+
+                    <div class="table-footer">
+
+                        <span id="transactions-last-updated">
+                            Last updated: Not yet loaded
+                        </span>
+
+                    </div>
+
+                </section>
+
+
+                <section class="dashboard-footer">
+
+                    <p>
+                        Smart Matatu System |
+                        Revenue Management and Verification
+                    </p>
+
+                    <span>
+                        Transaction Records
+                    </span>
+
+                </section>
+
+            </div>
+
+        </main>
+
+    </div>
+
+</body>
+</html>

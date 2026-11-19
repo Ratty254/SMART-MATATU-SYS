@@ -4,511 +4,282 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Smart Matatu Management System</title>
-    <link rel="stylesheet" href="style.css">
+
+    <meta
+        name="description"
+        content="Smart Matatu is a digital fare collection and revenue management platform designed to improve transparency in matatu operations."
+    >
+
+    <title>Smart Matatu | Digital Fare & Revenue Management</title>
+
+    <link rel="stylesheet" href="css/style.css">
 </head>
 
-<body>
+<body class="landing-page">
 
-    <div id="login-section" class="container">
+    <header class="landing-header">
 
-        <div class="card">
+        <a class="brand" href="index.html">
+            SMART MATATU
+        </a>
 
-            <h1>Smart Matatu</h1>
+        <nav class="landing-nav" aria-label="Main navigation">
 
-            <h2>System Login</h2>
+            <a href="#features">Features</a>
 
-            <p>Enter your account credentials to continue.</p>
+            <a href="pages/login.html">
+                Login
+            </a>
 
-            <form id="login-form">
+            <a class="btn btn-primary" href="pages/register.html">
+                Create Account
+            </a>
 
-                <label for="login-username">Username:</label>
+        </nav>
 
-                <input
-                    type="text"
-                    id="login-username"
-                    placeholder="Enter username"
-                    required
-                >
+    </header>
 
-                <label for="login-password">Password:</label>
+    <main>
 
-                <input
-                    type="password"
-                    id="login-password"
-                    placeholder="Enter password"
-                    required
-                >
+        <section class="landing-hero">
 
-                <button
-                    type="submit"
-                    id="login-button"
-                    class="primary-button"
-                >
-                    Login
-                </button>
+            <div class="hero-content">
 
-                <p id="login-message" role="alert"></p>
-
-            </form>
-
-        </div>
-
-    </div>
-
-
-    <div id="dashboard-section" hidden>
-
-        <div class="app-layout">
-
-            <aside class="sidebar">
-
-                <h2>SMART MATATU</h2>
-
-                <p style="color: #aabbd0;">
-                    Management System
+                <p class="eyebrow">
+                    SMART FARE COLLECTION & REVENUE VERIFICATION
                 </p>
 
-                <nav class="sidebar-nav">
+                <h1>
+                    Bringing transparency to every
+                    <span>matatu fare.</span>
+                </h1>
 
-                    <a href="#dashboard-kpis" class="active">
-                        Dashboard
-                    </a>
+                <p>
+                    Smart Matatu helps conductors record passenger fares
+                    and gives SACCO teams clearer visibility of collections,
+                    transactions and route performance.
+                </p>
 
-                    <a href="#fare-collection">
-                        Fare Collection
-                    </a>
+                <div class="hero-actions">
 
-                    <a href="#transaction-history">
-                        Transactions
-                    </a>
-
-                    <a href="#revenue-summary">
-                        Revenue Reports
-                    </a>
-
-                    <a href="#user-management">
-                        Users
-                    </a>
-
-                    <a href="#user-profile">
-                        My Profile
-                    </a>
-
-                </nav>
-
-            </aside>
-
-            <main class="main-content">
-
-
-                <div class="topbar">
-
-                    <div>
-
-                        <h1>Dashboard Overview</h1>
-
-                        <p>
-                            Smart Matatu Management System
-                        </p>
-
-                    </div>
-
-                    <button
-                        type="button"
-                        id="logout-button"
-                        class="primary-button"
+                    <a
+                        class="btn btn-primary"
+                        href="pages/login.html"
                     >
-                        Logout
-                    </button>
+                        Login to Your Account
+                    </a>
+
+                    <a
+                        class="btn btn-outline"
+                        href="pages/register.html"
+                    >
+                        Create an Account
+                    </a>
 
                 </div>
 
-                <section id="fare-collection">
+                <p class="small-note">
+                    New accounts are created with the standard user role.
+                    Administrator privileges cannot be selected during
+                    public registration.
+                </p>
 
-                    <h2>Fare Collection</h2>
+            </div>
 
-                    <p>Record a passenger fare.</p>
 
-                    <label for="fare">
-                        Fare Amount:
-                    </label>
+            <div class="hero-visual">
 
-                    <input
-                        type="number"
-                        id="fare"
-                        name="fare"
-                        placeholder="Enter fare"
-                    >
+                <div class="hero-panel-top">
 
-                    <div class="form-group">
+                    <span class="hero-panel-label">
+                        COLLECTION OVERVIEW
+                    </span>
 
-                        <label for="passengers">
-                            Passenger Count:
-                        </label>
+                    <span class="status-pill">
+                        Digital Records
+                    </span>
 
-                        <input
-                            type="number"
-                            id="passengers"
-                            name="passengers"
-                            value="1"
-                            min="1"
-                        >
+                </div>
 
-                    </div>
 
-                    <div class="total-fare">
+                <div class="hero-stat">
 
-                        <span>Total fare:</span>
+                    <strong>01</strong>
 
-                        <strong id="total-fare">
-                            KSh 0
-                        </strong>
+                    <span>
+                        Record each fare
+                    </span>
 
-                    </div>
+                </div>
 
-                    <h3>Payment Method</h3>
 
-                    <div class="payment-methods">
+                <div class="hero-stat">
 
-                        <button
-                            type="button"
-                            class="payment-button"
-                            data-method="mpesa"
-                        >
-                            M-Pesa
-                        </button>
+                    <strong>02</strong>
 
-                        <button
-                            type="button"
-                            class="payment-button"
-                            data-method="cash"
-                        >
-                            Cash
-                        </button>
+                    <span>
+                        Track payment methods
+                    </span>
 
-                        <button
-                            type="button"
-                            class="payment-button"
-                            data-method="ussd"
-                        >
-                            USSD
-                        </button>
+                </div>
 
-                    </div>
 
-                    <p id="selected-methods">
-                        No Payment Method selected
+                <div class="hero-stat">
+
+                    <strong>03</strong>
+
+                    <span>
+                        Review revenue performance
+                    </span>
+
+                </div>
+
+
+                <p class="hero-panel-foot">
+                    A pilot platform for accountable matatu operations.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <section id="features" class="landing-section">
+
+            <div class="section-heading">
+
+                <p class="eyebrow">
+                    WHAT THE PLATFORM SUPPORTS
+                </p>
+
+                <h2>
+                    One system. Clearer operations.
+                </h2>
+
+                <p>
+                    A central platform for recording, monitoring
+                    and reviewing matatu fare collections.
+                </p>
+
+            </div>
+
+
+            <div class="feature-grid">
+
+                <article class="feature-card">
+
+                    <div class="feature-icon">01</div>
+
+                    <h3>Fare Collection</h3>
+
+                    <p>
+                        Record fares, passenger counts, routes
+                        and boarding stages.
                     </p>
 
-                    <button
-                        type="button"
-                        id="confirm-button"
-                        class="primary-button"
+                </article>
+
+
+                <article class="feature-card">
+
+                    <div class="feature-icon">02</div>
+
+                    <h3>Transaction Records</h3>
+
+                    <p>
+                        Search and review payments recorded
+                        by authorized users.
+                    </p>
+
+                </article>
+
+
+                <article class="feature-card">
+
+                    <div class="feature-icon">03</div>
+
+                    <h3>Revenue Reporting</h3>
+
+                    <p>
+                        View collection totals, payment breakdowns
+                        and route activity.
+                    </p>
+
+                </article>
+
+
+                <article class="feature-card">
+
+                    <div class="feature-icon">04</div>
+
+                    <h3>Account Management</h3>
+
+                    <p>
+                        Administrators can manage account access
+                        and monitor system users.
+                    </p>
+
+                </article>
+
+            </div>
+
+        </section>
+
+
+        <section class="landing-section">
+
+            <div class="hero-visual">
+
+                <h2>
+                    Ready to access Smart Matatu?
+                </h2>
+
+                <p>
+                    Sign in to your account or create one to get started.
+                </p>
+
+                <div class="hero-actions" style="justify-content:center; margin-top:22px;">
+
+                    <a
+                        class="btn btn-secondary"
+                        href="pages/login.html"
                     >
-                        Confirm Payment
-                    </button>
+                        Sign In
+                    </a>
 
-
-                    <div
-                        id="payment-result"
-                        class="payment-result"
+                    <a
+                        class="btn btn-outline"
+                        href="pages/register.html"
+                        style="color:white; border-color:white;"
                     >
+                        Create Account
+                    </a>
 
-                        <div class="success-icon"></div>
+                </div>
 
-                        <h2>Payment successful!</h2>
+            </div>
 
-                        <p id="transaction-message">
-                            Your payment has been successfully recorded.
-                        </p>
+        </section>
 
-                        <div class="transaction-details">
+    </main>
 
-                            <p>
-                                Transaction ID:
-                                <span id="transaction-id"></span>
-                            </p>
 
-                        </div>
+    <footer class="landing-footer">
 
-                    </div>
+        <p>
+            &copy; <span id="year"></span>
+            Smart Matatu Management System.
+            All rights reserved.
+        </p>
 
-                </section>
+    </footer>
 
-                <section
-                    id="transaction-history"
-                    class="transaction-history"
-                >
 
-                    <h3>Transaction History</h3>
-
-                    <label for="transaction-search">
-                        Search transactions:
-                    </label>
-
-                    <input
-                        type="search"
-                        id="transaction-search"
-                        placeholder="Search by ID, method, or status"
-                    >
-
-                    <div class="transaction-filter">
-
-                        <label for="payment-filter">
-                            Payment Method
-                        </label>
-
-                        <select id="payment-filter">
-
-                            <option value="all">
-                                All Payment Methods
-                            </option>
-
-                            <option value="mpesa">
-                                M-Pesa
-                            </option>
-
-                            <option value="cash">
-                                Cash
-                            </option>
-
-                            <option value="ussd">
-                                USSD
-                            </option>
-
-                        </select>
-
-                    </div>
-
-                    <table>
-
-                        <thead>
-
-                            <tr>
-                                <th>Transaction ID</th>
-                                <th>Fare Amount</th>
-                                <th>Passenger Count</th>
-                                <th>Total Fare</th>
-                                <th>Payment Method</th>
-                                <th>Payment Status</th>
-                                <th>Date</th>
-                                <th>Time</th>
-                            </tr>
-
-                        </thead>
-
-                        <tbody id="transaction-list">
-                        </tbody>
-
-                    </table>
-
-                </section>
-
-                <section
-                    id="revenue-summary"
-                    class="revenue-summary"
-                >
-
-                    <h4>Revenue Summary</h4>
-
-                    <div class="revenue-card">
-
-                        <span>Total Revenue</span>
-
-                        <strong id="total-revenue">
-                            KSh 0.00
-                        </strong>
-
-                    </div>
-
-                    <div class="revenue-card">
-
-                        <span>Total Transactions</span>
-
-                        <strong id="total-transactions">
-                            0
-                        </strong>
-
-                    </div>
-
-                    <div class="revenue-card">
-
-                        <span>Total Passengers</span>
-
-                        <strong id="total-passengers">
-                            0
-                        </strong>
-
-                    </div>
-
-                    <div class="revenue-card">
-
-                        <span>Average Fare</span>
-
-                        <strong id="average-fare">
-                            KSh 0.00
-                        </strong>
-
-                    </div>
-
-                    <div class="revenue-card">
-
-                        <span>M-Pesa Revenue</span>
-
-                        <strong id="mpesa-revenue">
-                            KSh 0.00
-                        </strong>
-
-                    </div>
-
-                    <div class="revenue-card">
-
-                        <span>Cash Revenue</span>
-
-                        <strong id="cash-revenue">
-                            KSh 0.00
-                        </strong>
-
-                    </div>
-
-                    <div class="revenue-card">
-
-                        <span>USSD Revenue</span>
-
-                        <strong id="ussd-revenue">
-                            KSh 0.00
-                        </strong>
-
-                    </div>
-
-                </section>
-
-
-               
-
-                <section
-                    id="dashboard-kpis"
-                    class="dashboard-kpis"
-                >
-
-                    <h2>Revenue Dashboard</h2>
-
-                    <div class="kpi-grid">
-
-                        <div class="kpi-card">
-
-                            <h3>Total Revenue</h3>
-
-                            <p id="kpi-total-revenue">
-                                KSh 0.00
-                            </p>
-
-                        </div>
-
-                        <div class="kpi-card">
-
-                            <h3>Total Transactions</h3>
-
-                            <p id="kpi-total-transactions">
-                                0
-                            </p>
-
-                        </div>
-
-                        <div class="kpi-card">
-
-                            <h3>Total Passengers</h3>
-
-                            <p id="kpi-total-passengers">
-                                0
-                            </p>
-
-                        </div>
-
-                        <div class="kpi-card">
-
-                            <h3>Average Fare</h3>
-
-                            <p id="kpi-average-fare">
-                                KSh 0.00
-                            </p>
-
-                        </div>
-
-                    </div>
-
-
-                    <h3 class="payment-summary-title">
-                        Payment Method Revenue
-                    </h3>
-
-                    <div class="kpi-grid">
-
-                        <div class="kpi-card">
-
-                            <h3>M-Pesa Revenue</h3>
-
-                            <p id="kpi-mpesa">
-                                KSh 0.00
-                            </p>
-
-                        </div>
-
-                        <div class="kpi-card">
-
-                            <h3>Cash Revenue</h3>
-
-                            <p id="kpi-cash">
-                                KSh 0.00
-                            </p>
-
-                        </div>
-
-                        <div class="kpi-card">
-
-                            <h3>USSD Revenue</h3>
-
-                            <p id="kpi-ussd">
-                                KSh 0.00
-                            </p>
-
-                        </div>
-
-                    </div>
-
-<div class="analytics-grid">
-
-    <div class="analytics-card">
-        <h3>Revenue Trends</h3>
-        <p>Revenue performance over time</p>
-        <canvas id="revenue-trend-chart"></canvas>
-    </div>
-
-    <div class="analytics-card">
-        <h3>Payment Methods</h3>
-        <p>Revenue distribution by payment type</p>
-        <canvas id="payment-method-chart"></canvas>
-    </div>
-
-    <div class="analytics-card">
-        <h3>Transactions by Route</h3>
-        <p>Route performance analysis</p>
-        <canvas id="route-performance-chart"></canvas>
-    </div>
-
-</div>
-                </section>
-
-
-            </main>
-
-        </div>
-
-    </div>
-
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="script.js"></script>
+    <!-- CURRENT YEAR -->
+    <script>
+        document.getElementById("year").textContent =
+            new Date().getFullYear();
+    </script>
 
 </body>
 

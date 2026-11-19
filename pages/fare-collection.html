@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta
+        name="description"
+        content="Record and manage matatu fare collections."
+    >
+
+    <title>Fare Collection | Smart Matatu</title>
+
+    <link rel="stylesheet" href="../css/style.css">
+
+    <script src="../js/api.js" defer></script>
+    <script src="../js/auth.js" defer></script>
+    <script src="../js/app-shell.js" defer></script>
+    <script src="../js/fare-collection.js" defer></script>
+</head>
+
+<body class="app-page">
+
+    <div class="app-layout">
+
+        <aside class="app-sidebar">
+
+            <div class="sidebar-brand">
+                <a href="../index.html">
+                    SMART <span>MATATU</span>
+                </a>
+            </div>
+
+            <div class="sidebar-user">
+
+                <div class="user-avatar">
+                    <span>SM</span>
+                </div>
+
+                <div class="user-details">
+                    <strong id="current-user-name">System User</strong>
+                    <small id="current-user-role">User</small>
+                </div>
+
+            </div>
+
+            <nav class="sidebar-navigation">
+
+                <p class="sidebar-heading">MAIN MENU</p>
+
+                <a href="dashboard.html">
+                    <span>▦</span>
+                    Dashboard
+                </a>
+
+                <a href="fare-collection.html" class="active">
+                    <span>▤</span>
+                    Fare Collection
+                </a>
+
+                <a href="transactions.html">
+                    <span>⇄</span>
+                    Transactions
+                </a>
+
+                <a href="revenue-reports.html">
+                    <span>▥</span>
+                    Revenue Reports
+                </a>
+
+                <p class="sidebar-heading">MANAGEMENT</p>
+
+                <a href="users.html" data-page="users">
+                    <span>♙</span>
+                    User Management
+                </a>
+
+                <a href="profile.html">
+                    <span>⚙</span>
+                    My Profile
+                </a>
+
+            </nav>
+
+            <div class="sidebar-bottom">
+
+                <button
+                    type="button"
+                    id="logout-button"
+                    class="logout-button"
+                >
+                    <span>↪</span>
+                    Sign Out
+                </button>
+
+            </div>
+
+        </aside>
+
+        <main class="app-main">
+
+            <header class="app-topbar">
+
+                <div>
+                    <p class="topbar-eyebrow">SMART MATATU SYSTEM</p>
+                    <h1>Fare Collection</h1>
+                </div>
+
+                <div class="topbar-user">
+                    <span>Welcome,</span>
+                    <strong id="logged-in-username">System User</strong>
+                </div>
+
+            </header>
+
+            <div class="dashboard-content">
+
+                <!-- INTRODUCTION -->
+                <section class="dashboard-intro">
+
+                    <div>
+                        <h2>Record Passenger Payments</h2>
+
+                        <p>
+                            Capture fare payments, passenger numbers
+                            and journey details.
+                        </p>
+                    </div>
+
+                </section>
+
+                <div
+                    id="fare-message"
+                    class="auth-message"
+                    role="alert"
+                    aria-live="polite"
+                    hidden
+                ></div>
+
+                <section class="content-card fare-collection-card">
+
+                    <div class="section-heading">
+                        <div>
+                            <h2>New Fare Transaction</h2>
+
+                            <p>
+                                Enter the journey and payment details.
+                            </p>
+                        </div>
+                    </div>
+
+                    <form id="fare-collection-form">
+
+                        <div class="form-section">
+
+                            <h3>Journey Information</h3>
+
+                            <div class="form-grid">
+
+                                <div class="form-group">
+
+                                    <label for="route-select">
+                                        Route
+                                    </label>
+
+                                    <select
+                                        id="route-select"
+                                        name="route_id"
+                                        required
+                                    >
+                                        <option value="">
+                                            Loading routes...
+                                        </option>
+                                    </select>
+
+                                </div>
+
+                                <div class="form-group">
+
+                                    <label for="boarding-stage">
+                                        Boarding Stage
+                                    </label>
+
+                                    <select
+                                        id="boarding-stage"
+                                        name="boarding_stage_id"
+                                        required
+                                        disabled
+                                    >
+                                        <option value="">
+                                            Select boarding stage
+                                        </option>
+                                    </select>
+
+                                </div>
+
+                                <div class="form-group">
+
+                                    <label for="alighting-stage">
+                                        Alighting Stage
+                                    </label>
+
+                                    <select
+                                        id="alighting-stage"
+                                        name="alighting_stage_id"
+                                        required
+                                        disabled
+                                    >
+                                        <option value="">
+                                            Select alighting stage
+                                        </option>
+                                    </select>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                        <div class="form-section">
+
+                            <h3>Fare Details</h3>
+
+                            <div class="form-grid">
+
+                                <div class="form-group">
+
+                                    <label for="fare-amount">
+                                        Fare per Passenger (KSh)
+                                    </label>
+
+                                    <input
+                                        type="number"
+                                        id="fare-amount"
+                                        name="fare"
+                                        min="1"
+                                        step="0.01"
+                                        placeholder="Enter fare"
+                                        required
+                                    >
+
+                                </div>
+
+                                <div class="form-group">
+
+                                    <label for="passenger-count">
+                                        Number of Passengers
+                                    </label>
+
+                                    <input
+                                        type="number"
+                                        id="passenger-count"
+                                        name="passengers"
+                                        min="1"
+                                        step="1"
+                                        placeholder="Enter passenger quantity"
+                                        required
+                                    >
+
+                                </div>
+
+                            </div>
+
+                            <div class="fare-total-panel">
+
+                                <div>
+                                    <span>Total Fare</span>
+
+                                    <p>
+                                        Calculated automatically
+                                    </p>
+                                </div>
+
+                                <strong id="calculated-total">
+                                    KSh 0.00
+                                </strong>
+
+                            </div>
+
+                        </div>
+
+                        <div class="form-section">
+
+                            <h3>Payment Method</h3>
+
+                            <p class="form-description">
+                                Select the method used by the passenger.
+                            </p>
+
+                            <div
+                                class="payment-method-grid"
+                                id="payment-method-options"
+                            >
+
+                                <label class="payment-option">
+
+                                    <input
+                                        type="radio"
+                                        name="payment_method"
+                                        value="M-Pesa"
+                                        required
+                                    >
+
+                                    <span class="payment-option-content">
+                                        <strong>M-Pesa</strong>
+                                        <small>Mobile money</small>
+                                    </span>
+
+                                </label>
+
+                                <label class="payment-option">
+
+                                    <input
+                                        type="radio"
+                                        name="payment_method"
+                                        value="Cash"
+                                    >
+
+                                    <span class="payment-option-content">
+                                        <strong>Cash</strong>
+                                        <small>Physical payment</small>
+                                    </span>
+
+                                </label>
+
+                                <label class="payment-option">
+
+                                    <input
+                                        type="radio"
+                                        name="payment_method"
+                                        value="USSD"
+                                    >
+
+                                    <span class="payment-option-content">
+                                        <strong>USSD</strong>
+                                        <small>USSD payment</small>
+                                    </span>
+
+                                </label>
+
+                            </div>
+
+                        </div>
+
+                        <div class="form-section">
+
+                            <h3>Transaction Summary</h3>
+
+                            <div class="transaction-summary">
+
+                                <div>
+                                    <span>Fare per Passenger</span>
+                                    <strong id="summary-fare">
+                                        KSh 0.00
+                                    </strong>
+                                </div>
+
+                                <div>
+                                    <span>Passengers</span>
+                                    <strong id="summary-passengers">
+                                        0
+                                    </strong>
+                                </div>
+
+                                <div>
+                                    <span>Payment Method</span>
+                                    <strong id="summary-payment-method">
+                                        Not selected
+                                    </strong>
+                                </div>
+
+                                <div class="summary-total">
+                                    <span>Amount to Collect</span>
+
+                                    <strong id="summary-total">
+                                        KSh 0.00
+                                    </strong>
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                        <div class="form-actions">
+
+                            <button
+                                type="reset"
+                                id="clear-fare-form"
+                                class="btn btn-secondary"
+                            >
+                                Clear Form
+                            </button>
+
+                            <button
+                                type="submit"
+                                id="confirm-payment"
+                                class="btn btn-primary"
+                            >
+                                Confirm Payment
+                            </button>
+
+                        </div>
+
+                    </form>
+
+                </section>
+
+                <section class="content-card">
+
+                    <div class="section-heading">
+
+                        <div>
+                            <h2>Recent Collections</h2>
+
+                            <p>
+                                Recently recorded fare transactions.
+                            </p>
+                        </div>
+
+                        <a href="transactions.html">
+                            View All →
+                        </a>
+
+                    </div>
+
+                    <div class="table-responsive">
+
+                        <table class="transactions-table">
+
+                            <thead>
+                                <tr>
+                                    <th>Transaction ID</th>
+                                    <th>Fare</th>
+                                    <th>Passengers</th>
+                                    <th>Total</th>
+                                    <th>Payment</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+
+                            <tbody id="fare-recent-transactions">
+
+                                <tr>
+                                    <td colspan="6">
+                                        Loading transactions...
+                                    </td>
+                                </tr>
+
+                            </tbody>
+
+                        </table>
+
+                    </div>
+
+                </section>
+
+                <footer class="dashboard-footer">
+                    <p>
+                        Smart Matatu System |
+                        Fare Collection and Revenue Verification
+                    </p>
+                </footer>
+
+            </div>
+
+        </main>
+
+    </div>
+
+</body>
+
+</html>

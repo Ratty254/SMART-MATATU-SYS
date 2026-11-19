@@ -7,8 +7,8 @@ const Database = require("better-sqlite3");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 
-
 const app = express();
+
 const PORT = 3000;
 const JWT_SECRET = process.env.JWT_SECRET;
 
@@ -22,12 +22,64 @@ app.use(express.static(path.join(__dirname, "..")));
 
 
 const databasePath = path.join(__dirname, "smart-matatu.db");
+
 const db = new Database(databasePath);
 
 db.pragma("journal_mode = WAL");
 db.pragma("foreign_keys = ON");
 
 console.log("SERVER DATABASE PATH:", databasePath);
+
+
+
+function getTableColumns(tableName) {
+    return db.prepare(`PRAGMA table_info(${tableName})`).all();
+}
+
+function addColumnIfMissing(tableName, columnName, columnDefinition) {
+    const columns = getTableColumns(tableName);
+
+    const exists = columns.some(
+        column => column.name === columnName
+    );
+
+    if (!exists) {
+        db.exec(`
+            ALTER TABLE ${tableName}
+            ADD COLUMN ${columnName} ${columnDefinition}
+        `);
+
+        console.log(
+            `Database migration: ${tableName}.${columnName} added.`
+        );
+    } else {
+        console.log(
+            `Database migration: ${tableName}.${columnName} already exists.`
+        );
+    }
+}
+
+function isValidEmail(email) {
+    return (
+        typeof email === "string" &&
+        /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())
+    );
+}
+
+function publicUser(user) {
+    if (!user) {
+        return null;
+    }
+
+    return {
+        id: user.id,
+        username: user.username,
+        email: user.email || "",
+        role: user.role,
+        status: user.status || "active",
+        created_at: user.created_at
+    };
+}
 
 db.exec(`
     CREATE TABLE IF NOT EXISTS transactions (
@@ -42,24 +94,10 @@ db.exec(`
     )
 `);
 
-const transactionColumns = db.prepare(
-    "PRAGMA table_info(transactions)"
-).all();
-
-const routeColumnExists = transactionColumns.some(
-    column => column.name === "route"
-);
-
-if (!routeColumnExists) {
-    db.exec(`
-        ALTER TABLE transactions
-        ADD COLUMN route TEXT
-    `);
-
-    console.log("Database migration: route column added.");
-} else {
-    console.log("Database migration: route column already exists.");
-}
+addColumnIfMissing("transactions", "route", "TEXT");
+addColumnIfMissing("transactions", "route_id", "INTEGER");
+addColumnIfMissing("transactions", "boarding_stage_id", "INTEGER");
+addColumnIfMissing("transactions", "alighting_stage_id", "INTEGER");
 
 console.log(
     "SERVER DATABASE COUNT:",
@@ -74,19 +112,87 @@ db.exec(`
         password_hash TEXT NOT NULL,
         role TEXT NOT NULL
             CHECK (role IN ('conductor', 'sacco_manager', 'admin')),
+        email TEXT,
+        status TEXT NOT NULL DEFAULT 'active',
         created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
     )
 `);
 
+
+
+addColumnIfMissing("users", "email", "TEXT");
+addColumnIfMissing(
+    "users",
+    "status",
+    "TEXT NOT NULL DEFAULT 'active'"
+);
+
 const findUserByUsername = db.prepare(`
-    SELECT id, username, password_hash, role
+    SELECT
+        id,
+        username,
+        password_hash,
+        email,
+        role,
+        status,
+        created_at
     FROM users
     WHERE username = ?
 `);
 
+const findUserById = db.prepare(`
+    SELECT
+        id,
+        username,
+        password_hash,
+        email,
+        role,
+        status,
+        created_at
+    FROM users
+    WHERE id = ?
+`);
+
+const findUserByEmail = db.prepare(`
+    SELECT id
+    FROM users
+    WHERE LOWER(email) = LOWER(?)
+`);
+
 const insertUser = db.prepare(`
-    INSERT INTO users (username, password_hash, role)
-    VALUES (?, ?, ?)
+    INSERT INTO users (
+        username,
+        password_hash,
+        role,
+        email,
+        status
+    )
+    VALUES (?, ?, ?, ?, ?)
+`);
+
+const getAllUsers = db.prepare(`
+    SELECT
+        id,
+        username,
+        email,
+        role,
+        status,
+        created_at
+    FROM users
+    ORDER BY created_at DESC, id DESC
+`);
+
+const updateUserStatus = db.prepare(`
+    UPDATE users
+    SET status = ?
+    WHERE id = ?
+`);
+
+const countActiveAdmins = db.prepare(`
+    SELECT COUNT(*) AS count
+    FROM users
+    WHERE role = 'admin'
+    AND status = 'active'
 `);
 
 
@@ -100,6 +206,7 @@ db.exec(`
         created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
     )
 `);
+
 
 db.exec(`
     CREATE TABLE IF NOT EXISTS routes (
@@ -117,6 +224,8 @@ db.exec(`
             REFERENCES saccos(id)
     )
 `);
+
+
 db.exec(`
     CREATE TABLE IF NOT EXISTS route_stages (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -124,13 +233,17 @@ db.exec(`
         stage_order INTEGER NOT NULL,
         stop_name TEXT NOT NULL,
         created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+
         FOREIGN KEY (route_id)
             REFERENCES routes(id)
             ON DELETE CASCADE,
+
         UNIQUE (route_id, stage_order)
     )
 `);
+
 console.log("SACCO and routes tables initialized.");
+
 
 const insertSacco = db.prepare(`
     INSERT OR IGNORE INTO saccos
@@ -187,8 +300,10 @@ console.log(
 );
 
 
+
 function authenticateToken(req, res, next) {
     const authHeader = req.headers["authorization"];
+
     const token = authHeader && authHeader.split(" ")[1];
 
     if (!token) {
@@ -198,7 +313,7 @@ function authenticateToken(req, res, next) {
         });
     }
 
-    jwt.verify(token, JWT_SECRET, (error, user) => {
+    jwt.verify(token, JWT_SECRET, (error, decodedUser) => {
         if (error) {
             return res.status(403).json({
                 status: "error",
@@ -206,14 +321,42 @@ function authenticateToken(req, res, next) {
             });
         }
 
-        req.user = user;
+       
+
+        const currentUser = findUserById.get(decodedUser.id);
+
+        if (!currentUser) {
+            return res.status(401).json({
+                status: "error",
+                message: "User account no longer exists."
+            });
+        }
+
+        if (currentUser.status !== "active") {
+            return res.status(403).json({
+                status: "error",
+                message: "Your account is not active. Contact an administrator."
+            });
+        }
+
+        req.user = {
+            id: currentUser.id,
+            username: currentUser.username,
+            email: currentUser.email,
+            role: currentUser.role,
+            status: currentUser.status
+        };
+
         next();
     });
 }
 
 function authorizeRoles(...allowedRoles) {
     return (req, res, next) => {
-        if (!req.user || !allowedRoles.includes(req.user.role)) {
+        if (
+            !req.user ||
+            !allowedRoles.includes(req.user.role)
+        ) {
             return res.status(403).json({
                 status: "error",
                 message: "Access denied. You do not have permission."
@@ -224,29 +367,19 @@ function authorizeRoles(...allowedRoles) {
     };
 }
 
-const findTransaction = db.prepare(
-    "SELECT id FROM transactions WHERE id = ?"
-);
 
-const insertTransaction = db.prepare(`
-    INSERT INTO transactions
-    (id, fare, passengers, total, paymentmethod, status, dateTime)
-    VALUES (?, ?, ?, ?, ?, ?, ?)
-`);
+app.get("/api/health", (req, res) => {
+    return res.json({
+        status: "success",
+        message: "Smart Matatu backend is running.",
+        database: "SQLite",
+        timestamp: new Date().toISOString()
+    });
+});
 
-const getAllTransactions = db.prepare(`
-    SELECT id, fare, passengers, total,
-           paymentmethod, status, dateTime
-    FROM transactions
-    ORDER BY rowid ASC
-`);
-
-const getTransactionCount = db.prepare(
-    "SELECT COUNT(*) AS count FROM transactions"
-);
 
 app.post("/api/auth/login", (req, res) => {
-    const { username, password } = req.body;
+    const { username, password } = req.body || {};
 
     if (
         typeof username !== "string" ||
@@ -256,7 +389,7 @@ app.post("/api/auth/login", (req, res) => {
     ) {
         return res.status(400).json({
             status: "error",
-            message: "Username and password are required"
+            message: "Username and password are required."
         });
     }
 
@@ -265,7 +398,17 @@ app.post("/api/auth/login", (req, res) => {
     if (!user || !bcrypt.compareSync(password, user.password_hash)) {
         return res.status(401).json({
             status: "error",
-            message: "Invalid username or password"
+            message: "Invalid username or password."
+        });
+    }
+
+    if (user.status !== "active") {
+        return res.status(403).json({
+            status: "error",
+            message:
+                user.status === "pending"
+                    ? "Your account is awaiting administrator approval."
+                    : "Your account has been suspended."
         });
     }
 
@@ -281,33 +424,162 @@ app.post("/api/auth/login", (req, res) => {
 
     return res.json({
         status: "success",
-        message: "Login successful",
+        message: "Login successful.",
         token,
-        user: {
-            id: user.id,
-            username: user.username,
-            role: user.role
-        }
+        user: publicUser(user)
     });
 });
+
+
+
+app.post("/api/auth/register", async (req, res) => {
+    const {
+        username,
+        email,
+        password,
+        role
+    } = req.body || {};
+
+    if (
+        typeof username !== "string" ||
+        !/^[a-zA-Z0-9_.-]{3,30}$/.test(username.trim())
+    ) {
+        return res.status(400).json({
+            status: "error",
+            message:
+                "Username must contain 3 to 30 valid characters."
+        });
+    }
+
+    if (!isValidEmail(email)) {
+        return res.status(400).json({
+            status: "error",
+            message: "Please provide a valid email address."
+        });
+    }
+
+    if (
+        typeof password !== "string" ||
+        password.length < 8
+    ) {
+        return res.status(400).json({
+            status: "error",
+            message: "Password must contain at least 8 characters."
+        });
+    }
+
+   
+    if (!["conductor", "sacco_manager"].includes(role)) {
+        return res.status(400).json({
+            status: "error",
+            message: "Invalid registration role."
+        });
+    }
+
+    const cleanUsername = username.trim();
+    const cleanEmail = email.trim().toLowerCase();
+
+    const existingUsername = findUserByUsername.get(cleanUsername);
+
+    if (existingUsername) {
+        return res.status(409).json({
+            status: "error",
+            message: "Username already exists."
+        });
+    }
+
+    const existingEmail = findUserByEmail.get(cleanEmail);
+
+    if (existingEmail) {
+        return res.status(409).json({
+            status: "error",
+            message: "Email address is already registered."
+        });
+    }
+
+    try {
+        const passwordHash = await bcrypt.hash(password, 12);
+
+        const result = insertUser.run(
+            cleanUsername,
+            passwordHash,
+            role,
+            cleanEmail,
+            "pending"
+        );
+
+        const registeredUser = findUserById.get(
+            Number(result.lastInsertRowid)
+        );
+
+        return res.status(201).json({
+            status: "success",
+            message:
+                "Registration successful. Your account is awaiting administrator approval.",
+            user: publicUser(registeredUser)
+        });
+
+    } catch (error) {
+        console.error("Registration failed:", error);
+
+        if (error.code === "SQLITE_CONSTRAINT_UNIQUE") {
+            return res.status(409).json({
+                status: "error",
+                message: "Username already exists."
+            });
+        }
+
+        return res.status(500).json({
+            status: "error",
+            message: "Could not complete registration."
+        });
+    }
+});
+
+
 
 app.post(
     "/api/users",
     authenticateToken,
     authorizeRoles("admin"),
     async (req, res) => {
-        const { username, password, role } = req.body;
+        const {
+            username,
+            password,
+            role,
+            email
+        } = req.body || {};
 
         if (
             typeof username !== "string" ||
             typeof password !== "string" ||
-            !/^[a-zA-Z0-9_.-]{3,30}$/.test(username) ||
+            !/^[a-zA-Z0-9_.-]{3,30}$/.test(username.trim()) ||
             password.length < 12 ||
             !["conductor", "sacco_manager"].includes(role)
         ) {
             return res.status(400).json({
                 status: "error",
-                message: "Invalid username, password, or role. Password must have at least 12 characters."
+                message:
+                    "Invalid username, password, or role. Password must have at least 12 characters."
+            });
+        }
+
+        const cleanEmail =
+            typeof email === "string" && email.trim()
+                ? email.trim().toLowerCase()
+                : null;
+
+        if (cleanEmail && !isValidEmail(cleanEmail)) {
+            return res.status(400).json({
+                status: "error",
+                message: "Invalid email address."
+            });
+        }
+
+        if (cleanEmail && findUserByEmail.get(cleanEmail)) {
+            return res.status(409).json({
+                status: "error",
+                message: "Email address is already registered."
             });
         }
 
@@ -315,38 +587,560 @@ app.post(
             const passwordHash = await bcrypt.hash(password, 12);
 
             const result = insertUser.run(
-                username,
+                username.trim(),
                 passwordHash,
-                role
+                role,
+                cleanEmail,
+                "active"
+            );
+
+            const createdUser = findUserById.get(
+                Number(result.lastInsertRowid)
             );
 
             return res.status(201).json({
                 status: "success",
-                message: "User account created successfully",
-                user: {
-                    id: result.lastInsertRowid,
-                    username,
-                    role
-                }
+                message: "User account created successfully.",
+                user: publicUser(createdUser)
             });
 
         } catch (error) {
+            console.error("User creation failed:", error);
+
             if (error.code === "SQLITE_CONSTRAINT_UNIQUE") {
                 return res.status(409).json({
                     status: "error",
-                    message: "Username already exists"
+                    message: "Username already exists."
                 });
             }
 
-            console.error("User creation failed:", error.message);
-
             return res.status(500).json({
                 status: "error",
-                message: "Could not create user"
+                message: "Could not create user."
             });
         }
     }
 );
+
+
+app.get(
+    "/api/users",
+    authenticateToken,
+    authorizeRoles("admin"),
+    (req, res) => {
+        try {
+            const users = getAllUsers.all().map(publicUser);
+
+            return res.json({
+                status: "success",
+                count: users.length,
+                users
+            });
+
+        } catch (error) {
+            console.error("User retrieval failed:", error);
+
+            return res.status(500).json({
+                status: "error",
+                message: "Could not retrieve user accounts."
+            });
+        }
+    }
+);
+
+
+app.patch(
+    "/api/users/:id/status",
+    authenticateToken,
+    authorizeRoles("admin"),
+    (req, res) => {
+        const userId = Number(req.params.id);
+
+        const { status } = req.body || {};
+
+        if (
+            !Number.isInteger(userId) ||
+            userId <= 0
+        ) {
+            return res.status(400).json({
+                status: "error",
+                message: "Invalid user ID."
+            });
+        }
+
+        if (!["active", "pending", "suspended"].includes(status)) {
+            return res.status(400).json({
+                status: "error",
+                message:
+                    "Status must be active, pending, or suspended."
+            });
+        }
+
+        const targetUser = findUserById.get(userId);
+
+        if (!targetUser) {
+            return res.status(404).json({
+                status: "error",
+                message: "User account not found."
+            });
+        }
+
+        if (userId === req.user.id && status !== "active") {
+            return res.status(400).json({
+                status: "error",
+                message: "You cannot suspend or deactivate your own account."
+            });
+        }
+
+        if (
+            targetUser.role === "admin" &&
+            targetUser.status === "active" &&
+            status !== "active"
+        ) {
+            const activeAdmins = countActiveAdmins.get().count;
+
+            if (activeAdmins <= 1) {
+                return res.status(400).json({
+                    status: "error",
+                    message:
+                        "The last active administrator cannot be suspended or deactivated."
+                });
+            }
+        }
+
+        try {
+            updateUserStatus.run(status, userId);
+
+            const updatedUser = findUserById.get(userId);
+
+            return res.json({
+                status: "success",
+                message: `User account ${status} successfully.`,
+                user: publicUser(updatedUser)
+            });
+
+        } catch (error) {
+            console.error("User status update failed:", error);
+
+            return res.status(500).json({
+                status: "error",
+                message: "Could not update user status."
+            });
+        }
+    }
+);
+
+
+app.delete(
+    "/api/users/:id",
+    authenticateToken,
+    authorizeRoles("admin"),
+    (req, res) => {
+        const userId = Number(req.params.id);
+
+        if (
+            !Number.isInteger(userId) ||
+            userId <= 0
+        ) {
+            return res.status(400).json({
+                status: "error",
+                message: "Invalid user ID."
+            });
+        }
+
+        if (userId === req.user.id) {
+            return res.status(400).json({
+                status: "error",
+                message: "You cannot delete your own account."
+            });
+        }
+
+        const targetUser = findUserById.get(userId);
+
+        if (!targetUser) {
+            return res.status(404).json({
+                status: "error",
+                message: "User account not found."
+            });
+        }
+
+    
+
+        if (targetUser.role === "admin") {
+            return res.status(403).json({
+                status: "error",
+                message:
+                    "Administrator accounts cannot be deleted through this endpoint."
+            });
+        }
+
+        try {
+            db.prepare(`
+                DELETE FROM users
+                WHERE id = ?
+            `).run(userId);
+
+            return res.json({
+                status: "success",
+                message: "User account deleted successfully.",
+                deletedUserId: userId
+            });
+
+        } catch (error) {
+            console.error("User deletion failed:", error);
+
+            return res.status(500).json({
+                status: "error",
+                message: "Could not delete user account."
+            });
+        }
+    }
+);
+
+
+
+app.get(
+    "/api/users/me",
+    authenticateToken,
+    (req, res) => {
+        try {
+            const user = findUserById.get(req.user.id);
+
+            if (!user) {
+                return res.status(404).json({
+                    status: "error",
+                    message: "User profile not found."
+                });
+            }
+
+            return res.json({
+                status: "success",
+                user: publicUser(user)
+            });
+
+        } catch (error) {
+            console.error("Profile retrieval failed:", error);
+
+            return res.status(500).json({
+                status: "error",
+                message: "Could not retrieve your profile."
+            });
+        }
+    }
+);
+
+
+
+app.patch(
+    "/api/users/me",
+    authenticateToken,
+    (req, res) => {
+        const {
+            username,
+            email
+        } = req.body || {};
+
+        if (
+            typeof username !== "string" ||
+            !/^[a-zA-Z0-9_.-]{3,30}$/.test(username.trim())
+        ) {
+            return res.status(400).json({
+                status: "error",
+                message:
+                    "Username must contain 3 to 30 valid characters."
+            });
+        }
+
+        if (!isValidEmail(email)) {
+            return res.status(400).json({
+                status: "error",
+                message: "Please provide a valid email address."
+            });
+        }
+
+        const cleanUsername = username.trim();
+        const cleanEmail = email.trim().toLowerCase();
+
+        const existingUsername = findUserByUsername.get(cleanUsername);
+
+        if (
+            existingUsername &&
+            existingUsername.id !== req.user.id
+        ) {
+            return res.status(409).json({
+                status: "error",
+                message: "That username is already in use."
+            });
+        }
+
+        const existingEmail = findUserByEmail.get(cleanEmail);
+
+        if (
+            existingEmail &&
+            existingEmail.id !== req.user.id
+        ) {
+            return res.status(409).json({
+                status: "error",
+                message: "That email address is already in use."
+            });
+        }
+
+        try {
+            db.prepare(`
+                UPDATE users
+                SET username = ?,
+                    email = ?
+                WHERE id = ?
+            `).run(
+                cleanUsername,
+                cleanEmail,
+                req.user.id
+            );
+
+            const updatedUser = findUserById.get(req.user.id);
+
+            return res.json({
+                status: "success",
+                message: "Profile updated successfully.",
+                user: publicUser(updatedUser)
+            });
+
+        } catch (error) {
+            console.error("Profile update failed:", error);
+
+            return res.status(500).json({
+                status: "error",
+                message: "Could not update your profile."
+            });
+        }
+    }
+);
+
+
+
+app.post(
+    "/api/users/me/change-password",
+    authenticateToken,
+    async (req, res) => {
+        const {
+            currentPassword,
+            newPassword
+        } = req.body || {};
+
+        if (
+            typeof currentPassword !== "string" ||
+            typeof newPassword !== "string" ||
+            !currentPassword ||
+            !newPassword
+        ) {
+            return res.status(400).json({
+                status: "error",
+                message: "Current and new passwords are required."
+            });
+        }
+
+        if (newPassword.length < 8) {
+            return res.status(400).json({
+                status: "error",
+                message:
+                    "New password must contain at least 8 characters."
+            });
+        }
+
+        if (currentPassword === newPassword) {
+            return res.status(400).json({
+                status: "error",
+                message:
+                    "New password must be different from your current password."
+            });
+        }
+
+        try {
+            const user = findUserById.get(req.user.id);
+
+            if (!user) {
+                return res.status(404).json({
+                    status: "error",
+                    message: "User account not found."
+                });
+            }
+
+            const passwordMatches = await bcrypt.compare(
+                currentPassword,
+                user.password_hash
+            );
+
+            if (!passwordMatches) {
+                return res.status(401).json({
+                    status: "error",
+                    message: "Current password is incorrect."
+                });
+            }
+
+            const newPasswordHash = await bcrypt.hash(
+                newPassword,
+                12
+            );
+
+            db.prepare(`
+                UPDATE users
+                SET password_hash = ?
+                WHERE id = ?
+            `).run(
+                newPasswordHash,
+                req.user.id
+            );
+
+            return res.json({
+                status: "success",
+                message: "Password changed successfully."
+            });
+
+        } catch (error) {
+            console.error("Password change failed:", error);
+
+            return res.status(500).json({
+                status: "error",
+                message: "Could not change password."
+            });
+        }
+    }
+);
+
+
+
+app.patch(
+    "/api/routes/:id/verification",
+    authenticateToken,
+    authorizeRoles("admin"),
+    (req, res) => {
+        const routeId = Number(req.params.id);
+
+        const { verification_status } = req.body || {};
+
+        if (!Number.isInteger(routeId) || routeId <= 0) {
+            return res.status(400).json({
+                status: "error",
+                message: "Invalid route ID."
+            });
+        }
+
+        if (!["approved", "rejected"].includes(verification_status)) {
+            return res.status(400).json({
+                status: "error",
+                message:
+                    "Verification status must be approved or rejected."
+            });
+        }
+
+        const route = db.prepare(`
+            SELECT id, route_code, route_name, verification_status
+            FROM routes
+            WHERE id = ?
+        `).get(routeId);
+
+        if (!route) {
+            return res.status(404).json({
+                status: "error",
+                message: "Route not found."
+            });
+        }
+
+        db.prepare(`
+            UPDATE routes
+            SET verification_status = ?
+            WHERE id = ?
+        `).run(verification_status, routeId);
+
+        const updatedRoute = db.prepare(`
+            SELECT
+                id,
+                route_code,
+                route_name,
+                status,
+                verification_status
+            FROM routes
+            WHERE id = ?
+        `).get(routeId);
+
+        return res.json({
+            status: "success",
+            message: `Route ${verification_status} successfully.`,
+            route: updatedRoute
+        });
+    }
+);
+
+
+
+const findTransaction = db.prepare(`
+    SELECT *
+    FROM transactions
+    WHERE id = ?
+`);
+
+const getRouteById = db.prepare(`
+    SELECT
+        id,
+        route_code,
+        route_name,
+        status,
+        verification_status
+    FROM routes
+    WHERE id = ?
+`);
+
+const getRouteStageByRouteAndId = db.prepare(`
+    SELECT
+        id,
+        route_id,
+        stage_order,
+        stop_name
+    FROM route_stages
+    WHERE id = ?
+    AND route_id = ?
+`);
+
+const insertTransaction = db.prepare(`
+    INSERT INTO transactions
+    (
+        id,
+        fare,
+        passengers,
+        total,
+        paymentmethod,
+        route,
+        status,
+        dateTime,
+        route_id,
+        boarding_stage_id,
+        alighting_stage_id
+    )
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+`);
+
+const getAllTransactions = db.prepare(`
+    SELECT
+        id,
+        fare,
+        passengers,
+        total,
+        paymentmethod,
+        status,
+        dateTime,
+        route,
+        route_id,
+        boarding_stage_id,
+        alighting_stage_id
+    FROM transactions
+    ORDER BY rowid ASC
+`);
+
+const getTransactionCount = db.prepare(`
+    SELECT COUNT(*) AS count
+    FROM transactions
+`);
+
 
 app.get(
     "/api/saccos",
@@ -373,22 +1167,27 @@ app.get(
             });
 
         } catch (error) {
-            console.error("SACCO retrieval failed:", error.message);
+            console.error("SACCO retrieval failed:", error);
 
             return res.status(500).json({
                 status: "error",
-                message: "Could not retrieve SACCO records"
+                message: "Could not retrieve SACCO records."
             });
         }
     }
 );
+
 
 app.post(
     "/api/saccos",
     authenticateToken,
     authorizeRoles("admin"),
     (req, res) => {
-        const { sacco_code, sacco_name, county } = req.body || {};
+        const {
+            sacco_code,
+            sacco_name,
+            county
+        } = req.body || {};
 
         if (
             typeof sacco_code !== "string" ||
@@ -402,7 +1201,7 @@ app.post(
         ) {
             return res.status(400).json({
                 status: "error",
-                message: "Invalid SACCO registration details"
+                message: "Invalid SACCO registration details."
             });
         }
 
@@ -419,7 +1218,7 @@ app.post(
 
             return res.status(201).json({
                 status: "success",
-                message: "SACCO registered successfully",
+                message: "SACCO registered successfully.",
                 sacco: {
                     id: result.lastInsertRowid,
                     sacco_code: sacco_code.trim(),
@@ -433,19 +1232,21 @@ app.post(
             if (error.code === "SQLITE_CONSTRAINT_UNIQUE") {
                 return res.status(409).json({
                     status: "error",
-                    message: "SACCO code already exists"
+                    message: "SACCO code already exists."
                 });
             }
 
-            console.error("SACCO registration failed:", error.message);
+            console.error("SACCO registration failed:", error);
 
             return res.status(500).json({
                 status: "error",
-                message: "Could not register SACCO"
+                message: "Could not register SACCO."
             });
         }
     }
 );
+
+
 
 app.get(
     "/api/routes",
@@ -479,11 +1280,11 @@ app.get(
             });
 
         } catch (error) {
-            console.error("Route retrieval failed:", error.message);
+            console.error("Route retrieval failed:", error);
 
             return res.status(500).json({
                 status: "error",
-                message: "Could not retrieve route records"
+                message: "Could not retrieve route records."
             });
         }
     }
@@ -519,7 +1320,7 @@ app.post(
         ) {
             return res.status(400).json({
                 status: "error",
-                message: "Invalid route registration details"
+                message: "Invalid route registration details."
             });
         }
 
@@ -532,7 +1333,7 @@ app.post(
         if (!saccoExists) {
             return res.status(404).json({
                 status: "error",
-                message: "Selected SACCO does not exist"
+                message: "Selected SACCO does not exist."
             });
         }
 
@@ -557,7 +1358,7 @@ app.post(
 
             return res.status(201).json({
                 status: "success",
-                message: "Route registered successfully",
+                message: "Route registered successfully.",
                 route: {
                     id: result.lastInsertRowid,
                     route_code: route_code.trim(),
@@ -574,19 +1375,22 @@ app.post(
             if (error.code === "SQLITE_CONSTRAINT_UNIQUE") {
                 return res.status(409).json({
                     status: "error",
-                    message: "Route code already exists"
+                    message: "Route code already exists."
                 });
             }
 
-            console.error("Route registration failed:", error.message);
+            console.error("Route registration failed:", error);
 
             return res.status(500).json({
                 status: "error",
-                message: "Could not register route"
+                message: "Could not register route."
             });
         }
     }
 );
+
+
+
 app.get(
     "/api/routes/:id/stages",
     authenticateToken,
@@ -601,9 +1405,11 @@ app.get(
             });
         }
 
-        const route = db.prepare(
-            "SELECT * FROM routes WHERE id = ?"
-        ).get(routeId);
+        const route = db.prepare(`
+            SELECT *
+            FROM routes
+            WHERE id = ?
+        `).get(routeId);
 
         if (!route) {
             return res.status(404).json({
@@ -613,7 +1419,12 @@ app.get(
         }
 
         const stages = db.prepare(`
-            SELECT id, route_id, stage_order, stop_name, created_at
+            SELECT
+                id,
+                route_id,
+                stage_order,
+                stop_name,
+                created_at
             FROM route_stages
             WHERE route_id = ?
             ORDER BY stage_order ASC
@@ -621,104 +1432,19 @@ app.get(
 
         return res.json({
             success: true,
-            route: route,
+            route,
             total_stages: stages.length,
-            stages: stages
+            stages
         });
     }
 );
 
-app.post(
-    "/api/routes/:id/stages",
-    authenticateToken,
-    authorizeRoles("admin"),
-    (req, res) => {
-        const routeId = Number(req.params.id);
-        const stageOrder = Number(req.body.stage_order);
-        const stopName = req.body.stop_name;
-
-        if (!Number.isInteger(routeId) || routeId <= 0) {
-            return res.status(400).json({
-                success: false,
-                message: "Invalid route ID."
-            });
-        }
-
-        if (!Number.isInteger(stageOrder) || stageOrder <= 0) {
-            return res.status(400).json({
-                success: false,
-                message: "Stage order must be a positive integer."
-            });
-        }
-
-        if (typeof stopName !== "string" || !stopName.trim()) {
-            return res.status(400).json({
-                success: false,
-                message: "Stop name is required."
-            });
-        }
-
-        const route = db.prepare(
-            "SELECT id, route_code, route_name FROM routes WHERE id = ?"
-        ).get(routeId);
-
-        if (!route) {
-            return res.status(404).json({
-                success: false,
-                message: "Route not found."
-            });
-        }
-
-        try {
-            const result = db.prepare(`
-                INSERT INTO route_stages
-                (route_id, stage_order, stop_name)
-                VALUES (?, ?, ?)
-            `).run(routeId, stageOrder, stopName.trim());
-
-            const newStage = db.prepare(`
-                SELECT * FROM route_stages WHERE id = ?
-            `).get(result.lastInsertRowid);
-
-            return res.status(201).json({
-                success: true,
-                message: "Route stop registered successfully.",
-                stage: newStage
-            });
-
-        } catch (error) {
-            if (error.code === "SQLITE_CONSTRAINT_UNIQUE") {
-                return res.status(409).json({
-                    success: false,
-                    message: "This stage order already exists for this route."
-                });
-            }
-
-            console.error("Route stage registration error:", error);
-
-            return res.status(500).json({
-                success: false,
-                message: "Failed to register route stop."
-            });
-        }
-    }
-);
-
-app.get("/api/health", (req, res) => {
-    res.json({
-        status: "success",
-        message: "Smart Matatu API is healthy",
-        database: "SQLite",
-        timestamp: new Date().toISOString()
-    });
-});
 
 app.post(
     "/api/transactions",
     authenticateToken,
     authorizeRoles("conductor", "admin"),
     (req, res) => {
-
         const {
             id,
             fare,
@@ -726,7 +1452,10 @@ app.post(
             total,
             paymentmethod,
             status,
-            dateTime
+            dateTime,
+            route_id,
+            boarding_stage_id,
+            alighting_stage_id
         } = req.body || {};
 
         if (
@@ -737,24 +1466,83 @@ app.post(
             !Number.isInteger(passengers) ||
             passengers < 1 ||
             !Number.isFinite(total) ||
-            Math.abs(total - fare * passengers) > 0.001 ||
+            Math.abs(total - (fare * passengers)) > 0.001 ||
             typeof paymentmethod !== "string" ||
             !paymentmethod.trim()
         ) {
             return res.status(400).json({
                 status: "error",
-                message: "Invalid transaction details"
+                message: "Invalid transaction details."
             });
+        }
+
+        const hasRouteInformation =
+            route_id !== undefined ||
+            boarding_stage_id !== undefined ||
+            alighting_stage_id !== undefined;
+
+        let selectedRoute = null;
+        let boardingStage = null;
+        let alightingStage = null;
+
+        if (hasRouteInformation) {
+            if (
+                !Number.isInteger(route_id) ||
+                !Number.isInteger(boarding_stage_id) ||
+                !Number.isInteger(alighting_stage_id)
+            ) {
+                return res.status(400).json({
+                    status: "error",
+                    message:
+                        "Valid route, boarding stage and alighting stage IDs are required."
+                });
+            }
+
+            selectedRoute = getRouteById.get(route_id);
+
+            if (
+                !selectedRoute ||
+                selectedRoute.status !== "active" ||
+                selectedRoute.verification_status !== "approved"
+            ) {
+                return res.status(400).json({
+                    status: "error",
+                    message:
+                        "Selected route is unavailable or not approved."
+                });
+            }
+
+            boardingStage = getRouteStageByRouteAndId.get(
+                boarding_stage_id,
+                route_id
+            );
+
+            alightingStage = getRouteStageByRouteAndId.get(
+                alighting_stage_id,
+                route_id
+            );
+
+            if (!boardingStage || !alightingStage) {
+                return res.status(400).json({
+                    status: "error",
+                    message:
+                        "Invalid boarding or alighting stage."
+                });
+            }
+
+            if (
+                boardingStage.id === alightingStage.id ||
+                boardingStage.stage_order >= alightingStage.stage_order
+            ) {
+                return res.status(400).json({
+                    status: "error",
+                    message:
+                        "Alighting stage must come after boarding stage."
+                });
+            }
         }
 
         const transactionId = id.trim();
-
-        if (findTransaction.get(transactionId)) {
-            return res.status(409).json({
-                status: "error",
-                message: "Transaction ID already exists"
-            });
-        }
 
         const transaction = {
             id: transactionId,
@@ -762,13 +1550,67 @@ app.post(
             passengers,
             total,
             paymentmethod: paymentmethod.trim(),
-            status: typeof status === "string" && status.trim()
-                ? status.trim()
-                : "Paid",
-            dateTime: typeof dateTime === "string" && dateTime.trim()
-                ? dateTime
-                : new Date().toISOString()
+            route: selectedRoute
+                ? selectedRoute.route_name
+                : null,
+            status:
+                typeof status === "string" && status.trim()
+                    ? status.trim()
+                    : "Paid",
+            dateTime:
+                typeof dateTime === "string" && dateTime.trim()
+                    ? dateTime
+                    : new Date().toISOString(),
+            route_id: selectedRoute
+                ? selectedRoute.id
+                : null,
+            boarding_stage_id: boardingStage
+                ? boardingStage.id
+                : null,
+            alighting_stage_id: alightingStage
+                ? alightingStage.id
+                : null
         };
+
+        const matchesExistingTransaction = (existing, incoming) => {
+            return (
+                Number(existing.fare) === Number(incoming.fare) &&
+                Number(existing.passengers) === Number(incoming.passengers) &&
+                Number(existing.total) === Number(incoming.total) &&
+                existing.paymentmethod === incoming.paymentmethod &&
+                existing.route === incoming.route &&
+                existing.status === incoming.status &&
+                existing.route_id === incoming.route_id &&
+                existing.boarding_stage_id === incoming.boarding_stage_id &&
+                existing.alighting_stage_id === incoming.alighting_stage_id
+            );
+        };
+
+        const existingTransaction = findTransaction.get(transactionId);
+
+        if (existingTransaction) {
+            if (
+                matchesExistingTransaction(
+                    existingTransaction,
+                    transaction
+                )
+            ) {
+                return res.status(200).json({
+                    status: "success",
+                    message:
+                        "Transaction already saved. Duplicate request acknowledged.",
+                    count: getTransactionCount.get().count,
+                    transaction: existingTransaction,
+                    duplicate: true
+                });
+            }
+
+            return res.status(409).json({
+                status: "error",
+                message:
+                    "Transaction ID already exists with different details."
+            });
+        }
 
         try {
             insertTransaction.run(
@@ -777,15 +1619,20 @@ app.post(
                 transaction.passengers,
                 transaction.total,
                 transaction.paymentmethod,
+                transaction.route,
                 transaction.status,
-                transaction.dateTime
+                transaction.dateTime,
+                transaction.route_id,
+                transaction.boarding_stage_id,
+                transaction.alighting_stage_id
             );
 
             return res.status(201).json({
                 status: "success",
-                message: "Transaction saved to SQLite",
+                message: "Transaction saved to SQLite.",
                 count: getTransactionCount.get().count,
-                transaction
+                transaction,
+                duplicate: false
             });
 
         } catch (error) {
@@ -793,28 +1640,46 @@ app.post(
                 error.code === "SQLITE_CONSTRAINT_PRIMARYKEY" ||
                 error.code === "SQLITE_CONSTRAINT_UNIQUE"
             ) {
+                const existing = findTransaction.get(transaction.id);
+
+                if (
+                    existing &&
+                    matchesExistingTransaction(existing, transaction)
+                ) {
+                    return res.status(200).json({
+                        status: "success",
+                        message:
+                            "Transaction already saved. Duplicate request acknowledged.",
+                        count: getTransactionCount.get().count,
+                        transaction: existing,
+                        duplicate: true
+                    });
+                }
+
                 return res.status(409).json({
                     status: "error",
-                    message: "Transaction ID already exists"
+                    message:
+                        "Transaction ID already exists with different details."
                 });
             }
 
-            console.error("Database insert failed:", error.message);
+            console.error("Transaction insertion error:", error);
 
             return res.status(500).json({
                 status: "error",
-                message: "Could not save transaction"
+                message: "Failed to save transaction."
             });
         }
     }
 );
+
+
 
 app.get(
     "/api/transactions",
     authenticateToken,
     authorizeRoles("conductor", "sacco_manager", "admin"),
     (req, res) => {
-
         try {
             const transactions = getAllTransactions.all();
 
@@ -825,15 +1690,16 @@ app.get(
             });
 
         } catch (error) {
-            console.error("Database read failed:", error.message);
+            console.error("Database read failed:", error);
 
             return res.status(500).json({
                 status: "error",
-                message: "Could not retrieve transactions"
+                message: "Could not retrieve transactions."
             });
         }
     }
 );
+
 
 const server = app.listen(PORT, () => {
     console.log("-----------------------------------");
@@ -842,17 +1708,25 @@ const server = app.listen(PORT, () => {
     console.log(`Backend: http://localhost:${PORT}`);
     console.log(`SQLite: ${databasePath}`);
     console.log("Authentication: Enabled");
+    console.log("User Management: Enabled");
+    console.log("Profile Management: Enabled");
     console.log("SACCO Management: Initialized");
     console.log("Route Management: Initialized");
+    console.log("Transaction Management: Initialized");
     console.log("-----------------------------------");
 });
+
+
 
 function shutdown() {
     server.close(() => {
         db.close();
+
         console.log("Server and SQLite database closed.");
+
         process.exit(0);
     });
 }
+
 process.on("SIGINT", shutdown);
 process.on("SIGTERM", shutdown);

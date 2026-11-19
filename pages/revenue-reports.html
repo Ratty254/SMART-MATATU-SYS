@@ -1,0 +1,616 @@
+<!DOCTYPE html>
+
+\<html lang="en">
+
+\<head>     \<meta charset="UTF-8">     \<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta
+    name="description"
+    content="Smart Matatu revenue reports and payment analytics."
+>
+
+<title>Revenue Reports | Smart Matatu</title>
+
+<link rel="stylesheet" href="../css/style.css">
+
+<!-- Chart.js: Required for report charts -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<!-- Application scripts -->
+<script defer src="../js/api.js"></script>
+<script defer src="../js/auth.js"></script>
+<script defer src="../js/app-shell.js"></script>
+<script defer src="../js/revenue-reports.js"></script>
+```
+
+\</head>
+
+\<body class="app-page">
+
+```
+<div class="app-layout">
+
+    <!-- SIDEBAR -->
+    <aside class="app-sidebar">
+
+        <div class="sidebar-brand">
+            <a href="../index.html">
+                SMART <span>MATATU</span>
+            </a>
+        </div>
+
+
+        <!-- CURRENT USER -->
+        <div class="sidebar-user">
+
+            <div class="user-avatar">
+                <span>SM</span>
+            </div>
+
+            <div class="user-details">
+
+                <strong id="current-user-name">
+                    System User
+                </strong>
+
+                <small id="current-user-role">
+                    User
+                </small>
+
+            </div>
+
+        </div>
+
+
+        <!-- NAVIGATION -->
+        <nav class="sidebar-navigation">
+
+            <p class="sidebar-heading">MAIN MENU</p>
+
+            <a href="dashboard.html">
+                <span>▦</span>
+                Dashboard
+            </a>
+
+            <a href="fare-collection.html">
+                <span>▤</span>
+                Fare Collection
+            </a>
+
+            <a href="transactions.html">
+                <span>⇄</span>
+                Transactions
+            </a>
+
+            <a href="revenue-reports.html" class="active">
+                <span>▥</span>
+                Revenue Reports
+            </a>
+
+
+            <p class="sidebar-heading">MANAGEMENT</p>
+
+            <a
+                href="users.html"
+                data-page="users"
+                id="users-navigation-link"
+            >
+                <span>♙</span>
+                User Management
+            </a>
+
+            <a href="profile.html">
+                <span>⚙</span>
+                My Profile
+            </a>
+
+        </nav>
+
+
+        <!-- SIDEBAR FOOTER -->
+        <div class="sidebar-bottom">
+
+            <button
+                type="button"
+                id="logout-button"
+                class="logout-button"
+            >
+                <span>↪</span>
+                Sign Out
+            </button>
+
+        </div>
+
+    </aside>
+
+
+    
+    <main class="app-main">
+
+
+    
+        <header class="app-topbar">
+
+            <div>
+
+                <p class="topbar-eyebrow">
+                    SMART MATATU SYSTEM
+                </p>
+
+                <h1>Revenue Reports</h1>
+
+            </div>
+
+
+            <div class="topbar-user">
+
+                <span>Welcome,</span>
+
+                <strong id="logged-in-username">
+                    System User
+                </strong>
+
+            </div>
+
+        </header>
+
+
+        <div class="dashboard-content">
+
+
+            <section class="dashboard-intro">
+
+                <div>
+
+                    <h2>Revenue Overview</h2>
+
+                    <p>
+                        Monitor collected revenue, analyse payment
+                        channels and understand route performance.
+                    </p>
+
+                </div>
+
+
+                <button
+                    type="button"
+                    id="refresh-reports"
+                    class="btn btn-primary"
+                >
+                    ↻ Refresh Reports
+                </button>
+
+            </section>
+
+
+            <section class="content-panel">
+
+                <div class="panel-heading">
+
+                    <div>
+
+                        <h2>Report Period</h2>
+
+                        <p>
+                            Select the period you want to analyse.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div
+                    id="reports-message"
+                    class="message-box"
+                    role="status"
+                    aria-live="polite"
+                ></div>
+
+
+                <div class="transaction-filter-grid">
+
+
+                    <div class="form-group">
+
+                        <label for="report-period">
+                            Quick Period
+                        </label>
+
+                        <select id="report-period">
+
+                            <option value="today">
+                                Today
+                            </option>
+
+                            <option value="week">
+                                This Week
+                            </option>
+
+                            <option value="month" selected>
+                                This Month
+                            </option>
+
+                            <option value="year">
+                                This Year
+                            </option>
+
+                            <option value="all">
+                                All Time
+                            </option>
+
+                            <option value="custom">
+                                Custom Range
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label for="report-date-from">
+                            Start Date
+                        </label>
+
+                        <input
+                            type="date"
+                            id="report-date-from"
+                        >
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label for="report-date-to">
+                            End Date
+                        </label>
+
+                        <input
+                            type="date"
+                            id="report-date-to"
+                        >
+
+                    </div>
+
+
+                    <div class="filter-actions">
+
+                        <button
+                            type="button"
+                            id="generate-report"
+                            class="btn btn-primary"
+                        >
+                            Generate Report
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+
+            <section class="kpi-grid">
+
+
+                <article class="kpi-card">
+
+                    <div class="kpi-icon">
+                        KSh
+                    </div>
+
+                    <div class="kpi-details">
+
+                        <p>Total Revenue</p>
+
+                        <h2 id="report-total-revenue">
+                            KSh 0.00
+                        </h2>
+
+                        <small>Revenue for selected period</small>
+
+                    </div>
+
+                </article>
+
+
+                <article class="kpi-card">
+
+                    <div class="kpi-icon">
+                        ⇄
+                    </div>
+
+                    <div class="kpi-details">
+
+                        <p>Transactions</p>
+
+                        <h2 id="report-total-transactions">
+                            0
+                        </h2>
+
+                        <small>Recorded transactions</small>
+
+                    </div>
+
+                </article>
+
+
+                <article class="kpi-card">
+
+                    <div class="kpi-icon">
+                        ♙
+                    </div>
+
+                    <div class="kpi-details">
+
+                        <p>Passengers</p>
+
+                        <h2 id="report-total-passengers">
+                            0
+                        </h2>
+
+                        <small>Passengers recorded</small>
+
+                    </div>
+
+                </article>
+
+
+                <article class="kpi-card">
+
+                    <div class="kpi-icon">
+                        KSh
+                    </div>
+
+                    <div class="kpi-details">
+
+                        <p>Average Fare</p>
+
+                        <h2 id="report-average-fare">
+                            KSh 0.00
+                        </h2>
+
+                        <small>Average fare per passenger</small>
+
+                    </div>
+
+                </article>
+
+
+            </section>
+
+
+            <section class="content-panel">
+
+                <div class="panel-heading">
+
+                    <div>
+
+                        <h2>Revenue Trends</h2>
+
+                        <p>
+                            Track how collected revenue changes
+                            over the selected reporting period.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="chart-container">
+
+                    <canvas id="report-revenue-trend-chart"></canvas>
+
+                </div>
+
+            </section>
+
+
+            
+            <section class="charts-section">
+
+                <div class="charts-grid">
+
+
+                
+                    <article class="chart-card">
+
+                        <div class="panel-heading">
+
+                            <div>
+
+                                <h2>Revenue by Payment Method</h2>
+
+                                <p>
+                                    Compare collections across
+                                    payment channels.
+                                </p>
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="chart-container">
+
+                            <canvas id="report-payment-method-chart"></canvas>
+
+                        </div>
+
+                    </article>
+
+                    <article class="chart-card">
+
+                        <div class="panel-heading">
+
+                            <div>
+
+                                <h2>Transactions by Route</h2>
+
+                                <p>
+                                    Compare transaction activity
+                                    across routes.
+                                </p>
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="chart-container">
+
+                            <canvas id="report-route-chart"></canvas>
+
+                        </div>
+
+                    </article>
+
+
+                </div>
+
+            </section>
+
+
+            <section class="content-panel">
+
+                <div class="panel-heading">
+
+                    <div>
+
+                        <h2>Payment Method Summary</h2>
+
+                        <p>
+                            Review revenue collected through
+                            each payment channel.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="table-responsive">
+
+                    <table class="transactions-table">
+
+                        <thead>
+
+                            <tr>
+                                <th>Payment Method</th>
+                                <th>Transactions</th>
+                                <th>Passengers</th>
+                                <th>Total Revenue</th>
+                                <th>Share of Revenue</th>
+                            </tr>
+
+                        </thead>
+
+
+                        <tbody id="payment-summary-body">
+
+                            <tr>
+
+                                <td colspan="5" class="empty-state">
+                                    Report data will appear here.
+                                </td>
+
+                            </tr>
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+            </section>
+
+
+            <section class="content-panel">
+
+                <div class="panel-heading">
+
+                    <div>
+
+                        <h2>Route Performance</h2>
+
+                        <p>
+                            Review transaction activity and
+                            revenue generated by each route.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="table-responsive">
+
+                    <table class="transactions-table">
+
+                        <thead>
+
+                            <tr>
+                                <th>Route</th>
+                                <th>Transactions</th>
+                                <th>Passengers</th>
+                                <th>Total Revenue</th>
+                                <th>Average Fare</th>
+                            </tr>
+
+                        </thead>
+
+
+                        <tbody id="route-performance-body">
+
+                            <tr>
+
+                                <td colspan="5" class="empty-state">
+                                    Route performance data will appear here.
+                                </td>
+
+                            </tr>
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+            </section>
+
+
+            <!-- REPORT UPDATE INFORMATION -->
+            <div class="table-footer">
+
+                <span id="reports-last-updated">
+                    Last updated: Not yet generated
+                </span>
+
+            </div>
+
+            <section class="dashboard-footer">
+
+                <p>
+                    Smart Matatu System |
+                    Revenue Management and Verification
+                </p>
+
+                <span>
+                    Revenue Analytics
+                </span>
+
+            </section>
+
+
+        </div>
+
+    </main>
+
+</div>
+
+
+</body>
+</html>

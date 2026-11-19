@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta
+        name="description"
+        content="Smart Matatu System administration and revenue dashboard."
+    >
+
+    <title>Dashboard | Smart Matatu</title>
+
+    <link rel="stylesheet" href="../css/style.css">
+
+    <!-- Application scripts -->
+    <script src="../js/api.js" defer></script>
+    <script src="../js/auth.js" defer></script>
+    <script src="../js/app-shell.js" defer></script>
+
+    <!-- Chart.js must load before dashboard.js -->
+    <script
+        src="https://cdn.jsdelivr.net/npm/chart.js"
+        defer
+    ></script>
+
+    <script src="../js/dashboard.js" defer></script>
+</head>
+
+<body class="app-page">
+
+    <div class="app-layout">
+
+
+        <aside class="app-sidebar">
+
+            <div class="sidebar-brand">
+                <a href="../index.html">
+                    SMART <span>MATATU</span>
+                </a>
+            </div>
+
+            <div class="sidebar-user">
+
+                <div class="user-avatar">
+                    <span>SM</span>
+                </div>
+
+                <div class="user-details">
+                    <strong id="current-user-name">
+                        System User
+                    </strong>
+
+                    <small id="current-user-role">
+                        User
+                    </small>
+                </div>
+
+            </div>
+
+            <nav class="sidebar-navigation">
+
+                <p class="sidebar-heading">MAIN MENU</p>
+
+                <a href="dashboard.html" class="active">
+                    <span>▦</span>
+                    Dashboard
+                </a>
+
+                <a href="fare-collection.html">
+                    <span>▤</span>
+                    Fare Collection
+                </a>
+
+                <a href="transactions.html">
+                    <span>⇄</span>
+                    Transactions
+                </a>
+
+                <a href="revenue-reports.html">
+                    <span>▥</span>
+                    Revenue Reports
+                </a>
+
+                <p class="sidebar-heading">MANAGEMENT</p>
+
+                <a
+                    href="routes.html"
+                    data-page="routes"
+                    id="routes-navigation-link"
+                >
+                    <span>⇄</span>
+                    Route Management
+                </a>
+
+                <a
+                    href="users.html"
+                    data-page="users"
+                    id="users-navigation-link"
+                >
+                    <span>♙</span>
+                    User Management
+                </a>
+
+                <a href="profile.html">
+                    <span>⚙</span>
+                    My Profile
+                </a>
+
+            </nav>
+
+            <div class="sidebar-bottom">
+
+                <button
+                    type="button"
+                    id="logout-button"
+                    class="logout-button"
+                >
+                    <span>↪</span>
+                    Sign Out
+                </button>
+
+            </div>
+
+        </aside>
+
+        <main class="app-main">
+
+            <header class="app-topbar">
+
+                <div>
+                    <p class="topbar-eyebrow">
+                        SMART MATATU SYSTEM
+                    </p>
+
+                    <h1>Dashboard</h1>
+                </div>
+
+                <div class="topbar-user">
+                    <span>Welcome,</span>
+
+                    <strong id="logged-in-username">
+                        System User
+                    </strong>
+                </div>
+
+            </header>
+
+            <div class="dashboard-content">
+
+                <section class="dashboard-intro">
+
+                    <div>
+                        <h2>System Overview</h2>
+
+                        <p>
+                            Monitor fare collection, transactions
+                            and revenue performance across routes.
+                        </p>
+                    </div>
+
+                    <a
+                        href="fare-collection.html"
+                        class="btn btn-primary"
+                    >
+                        + Record Fare
+                    </a>
+
+                </section>
+
+                <section class="kpi-grid">
+
+                    <article class="kpi-card">
+
+                        <div class="kpi-icon">
+                            KSh
+                        </div>
+
+                        <div class="kpi-details">
+                            <p>Total Revenue</p>
+
+                            <h2 id="total-revenue">
+                                KSh 0.00
+                            </h2>
+
+                            <small>
+                                Recorded system revenue
+                            </small>
+                        </div>
+
+                    </article>
+
+                    <article class="kpi-card">
+
+                        <div class="kpi-icon">
+                            ⇄
+                        </div>
+
+                        <div class="kpi-details">
+                            <p>Total Transactions</p>
+
+                            <h2 id="total-transactions">
+                                0
+                            </h2>
+
+                            <small>
+                                Recorded payments
+                            </small>
+                        </div>
+
+                    </article>
+
+                    <article class="kpi-card">
+
+                        <div class="kpi-icon">
+                            ♙
+                        </div>
+
+                        <div class="kpi-details">
+                            <p>Total Passengers</p>
+
+                            <h2 id="total-passengers">
+                                0
+                            </h2>
+
+                            <small>
+                                Passengers recorded
+                            </small>
+                        </div>
+
+                    </article>
+
+                    <article class="kpi-card">
+
+                        <div class="kpi-icon">
+                            KSh
+                        </div>
+
+                        <div class="kpi-details">
+                            <p>Average Fare</p>
+
+                            <h2 id="average-fare">
+                                KSh 0.00
+                            </h2>
+
+                            <small>
+                                Average revenue per passenger
+                            </small>
+                        </div>
+
+                    </article>
+
+                </section>
+
+                <section class="revenue-summary">
+
+                    <div class="section-heading">
+                        <div>
+                            <h2>Revenue Summary</h2>
+
+                            <p>
+                                Revenue collected through different
+                                payment methods.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="revenue-method-grid">
+
+                        <article class="revenue-method-card">
+                            <span>M-Pesa</span>
+
+                            <strong id="mpesa-revenue">
+                                KSh 0.00
+                            </strong>
+                        </article>
+
+                        <article class="revenue-method-card">
+                            <span>Cash</span>
+
+                            <strong id="cash-revenue">
+                                KSh 0.00
+                            </strong>
+                        </article>
+
+                        <article class="revenue-method-card">
+                            <span>USSD</span>
+
+                            <strong id="ussd-revenue">
+                                KSh 0.00
+                            </strong>
+                        </article>
+
+                        <article class="revenue-method-card">
+                            <span>Other Payments</span>
+
+                            <strong id="other-revenue">
+                                KSh 0.00
+                            </strong>
+                        </article>
+
+                    </div>
+
+                </section>
+
+                <section class="charts-section">
+
+                    <div class="section-heading">
+
+                        <div>
+                            <h2>Performance Analytics</h2>
+
+                            <p>
+                                Visual analysis of revenue and
+                                payment activity.
+                            </p>
+                        </div>
+
+                    </div>
+
+                    <div class="charts-grid">
+
+                        <article class="chart-card">
+
+                            <div class="chart-heading">
+                                <h3>Revenue Trends</h3>
+
+                                <span>
+                                    Revenue over time
+                                </span>
+                            </div>
+
+                            <div class="chart-container">
+                                <canvas id="revenue-trend-chart"></canvas>
+                            </div>
+
+                        </article>
+
+                        <article class="chart-card">
+
+                            <div class="chart-heading">
+                                <h3>Payment Methods</h3>
+
+                                <span>
+                                    Revenue by payment method
+                                </span>
+                            </div>
+
+                            <div class="chart-container">
+                                <canvas id="payment-method-chart"></canvas>
+                            </div>
+
+                        </article>
+
+                        <article class="chart-card">
+
+                            <div class="chart-heading">
+                                <h3>Transactions by Route</h3>
+
+                                <span>
+                                    Transaction distribution
+                                </span>
+                            </div>
+
+                            <div class="chart-container">
+                                <canvas id="route-transactions-chart"></canvas>
+                            </div>
+
+                        </article>
+
+                    </div>
+
+                </section>
+
+                <section class="recent-transactions">
+
+                    <div class="section-heading">
+
+                        <div>
+                            <h2>Recent Transactions</h2>
+
+                            <p>
+                                Latest fare collection activity.
+                            </p>
+                        </div>
+
+                        <a href="transactions.html">
+                            View All Transactions →
+                        </a>
+
+                    </div>
+
+                    <div class="table-responsive">
+
+                        <table class="transactions-table">
+
+                            <thead>
+                                <tr>
+                                    <th>Transaction ID</th>
+                                    <th>Fare</th>
+                                    <th>Passengers</th>
+                                    <th>Total</th>
+                                    <th>Payment Method</th>
+                                    <th>Status</th>
+                                    <th>Date</th>
+                                </tr>
+                            </thead>
+
+                            <tbody id="recent-transactions-body">
+
+                                <tr>
+                                    <td colspan="7">
+                                        Loading recent transactions...
+                                    </td>
+                                </tr>
+
+                            </tbody>
+
+                        </table>
+
+                    </div>
+
+                </section>
+
+                <section class="dashboard-footer">
+
+                    <p>
+                        Smart Matatu System |
+                        Revenue Management and Verification
+                    </p>
+
+                    <span id="dashboard-last-updated">
+                        Awaiting dashboard data...
+                    </span>
+
+                </section>
+
+            </div>
+
+        </main>
+
+    </div>
+
+</body>
+
+</html>
