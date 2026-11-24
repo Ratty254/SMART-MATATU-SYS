@@ -1,11 +1,11 @@
-
-
 const API_BASE = "http://localhost:3000/api";
 
 window.API_BASE = API_BASE;
 
 
-
+// =====================================================
+// AUTHENTICATION AND SESSION MANAGEMENT
+// =====================================================
 
 function getAuthToken() {
     return sessionStorage.getItem("token");
@@ -51,6 +51,9 @@ function removeCurrentUser() {
 }
 
 
+// =====================================================
+// API ERROR HANDLING
+// =====================================================
 
 class APIError extends Error {
 
@@ -64,6 +67,9 @@ class APIError extends Error {
 }
 
 
+// =====================================================
+// CENTRAL API REQUEST HANDLER
+// =====================================================
 
 async function apiRequest(endpoint, options = {}) {
 
@@ -171,6 +177,9 @@ async function apiRequest(endpoint, options = {}) {
 }
 
 
+// =====================================================
+// TRANSACTION MANAGEMENT
+// =====================================================
 
 async function getTransactions() {
 
@@ -201,6 +210,194 @@ async function createTransaction(transactionData) {
 }
 
 
+// =====================================================
+// NOTIFICATION MANAGEMENT
+// =====================================================
+
+/**
+ * Retrieve notifications belonging to the logged-in user.
+ *
+ * Supported filters:
+ * - status: unread, read, acknowledged, investigating, resolved
+ * - severity: low, medium, high, critical
+ * - limit: 1 to 200
+ *
+ * Example:
+ * getNotifications({ status: "unread", limit: 50 })
+ */
+
+async function getNotifications(filters = {}) {
+
+    const params = new URLSearchParams();
+
+    const allowedStatuses = [
+        "unread",
+        "read",
+        "acknowledged",
+        "investigating",
+        "resolved"
+    ];
+
+    const allowedSeverities = [
+        "low",
+        "medium",
+        "high",
+        "critical"
+    ];
+
+    if (filters.status) {
+
+        const status = String(filters.status)
+            .trim()
+            .toLowerCase();
+
+        if (!allowedStatuses.includes(status)) {
+            throw new Error("Invalid notification status.");
+        }
+
+        params.append("status", status);
+    }
+
+    if (filters.severity) {
+
+        const severity = String(filters.severity)
+            .trim()
+            .toLowerCase();
+
+        if (!allowedSeverities.includes(severity)) {
+            throw new Error("Invalid notification severity.");
+        }
+
+        params.append("severity", severity);
+    }
+
+    if (filters.limit !== undefined) {
+
+        const limit = Number(filters.limit);
+
+        if (
+            !Number.isInteger(limit) ||
+            limit < 1 ||
+            limit > 200
+        ) {
+            throw new Error(
+                "Notification limit must be between 1 and 200."
+            );
+        }
+
+        params.append("limit", limit);
+    }
+
+    const queryString = params.toString();
+
+    const endpoint = queryString
+        ? `/notifications?${queryString}`
+        : "/notifications";
+
+    const response = await apiRequest(
+        endpoint,
+        {
+            method: "GET"
+        }
+    );
+
+    return response?.notifications || [];
+}
+
+
+/**
+ * Retrieve the unread notification count
+ * for the currently authenticated user.
+ */
+
+async function getUnreadNotificationCount() {
+
+    const response = await apiRequest(
+        "/notifications/unread-count",
+        {
+            method: "GET"
+        }
+    );
+
+    return Number(response?.unread_count || 0);
+}
+
+
+/**
+ * Mark an individual notification as read.
+ */
+
+async function markNotificationAsRead(notificationId) {
+
+    if (
+        !notificationId ||
+        !Number.isInteger(Number(notificationId)) ||
+        Number(notificationId) <= 0
+    ) {
+        throw new Error("A valid notification ID is required.");
+    }
+
+    return await apiRequest(
+        `/notifications/${encodeURIComponent(notificationId)}/read`,
+        {
+            method: "PATCH"
+        }
+    );
+}
+
+
+/**
+ * Update the status of an individual notification.
+ *
+ * Supported statuses:
+ * - read
+ * - acknowledged
+ * - investigating
+ * - resolved
+ */
+
+async function updateNotificationStatus(notificationId, status) {
+
+    if (
+        !notificationId ||
+        !Number.isInteger(Number(notificationId)) ||
+        Number(notificationId) <= 0
+    ) {
+        throw new Error("A valid notification ID is required.");
+    }
+
+    const allowedStatuses = [
+        "read",
+        "acknowledged",
+        "investigating",
+        "resolved"
+    ];
+
+    const notificationStatus = String(status)
+        .trim()
+        .toLowerCase();
+
+    if (!allowedStatuses.includes(notificationStatus)) {
+        throw new Error(
+            "Invalid notification status."
+        );
+    }
+
+    return await apiRequest(
+        `/notifications/${encodeURIComponent(notificationId)}/status`,
+        {
+            method: "PATCH",
+            body: {
+                status: notificationStatus
+            }
+        }
+    );
+}
+
+
+// =====================================================
+// ROUTE MANAGEMENT
+// =====================================================
 
 async function getRoutes() {
 
@@ -266,6 +463,10 @@ async function updateRouteVerification(routeId, verificationStatus) {
 }
 
 
+// =====================================================
+// USER PROFILE MANAGEMENT
+// =====================================================
+
 async function getMyProfile() {
 
     return await apiRequest(
@@ -288,6 +489,10 @@ async function updateMyProfile(profileData) {
     );
 }
 
+
+// =====================================================
+// USER MANAGEMENT
+// =====================================================
 
 async function getUsers() {
 
@@ -334,6 +539,10 @@ async function deleteUser(userId) {
     );
 }
 
+
+// =====================================================
+// FORMATTING UTILITIES
+// =====================================================
 
 function formatMoney(amount) {
 
@@ -394,6 +603,9 @@ function formatDateTime(dateValue) {
 }
 
 
+// =====================================================
+// MESSAGE DISPLAY UTILITIES
+// =====================================================
 
 function showMessage(element, message, type = "info") {
 
@@ -420,6 +632,10 @@ function clearMessage(element) {
 }
 
 
+// =====================================================
+// PUBLIC API
+// =====================================================
+
 window.SmartMatatuAPI = {
 
     API_BASE,
@@ -428,6 +644,7 @@ window.SmartMatatuAPI = {
 
     APIError,
 
+    // Authentication
     getAuthToken,
     setAuthToken,
     removeAuthToken,
@@ -436,30 +653,45 @@ window.SmartMatatuAPI = {
     setCurrentUser,
     removeCurrentUser,
 
+    // Transactions
     getTransactions,
     createTransaction,
 
+    // Notifications
+    getNotifications,
+    getUnreadNotificationCount,
+    markNotificationAsRead,
+    updateNotificationStatus,
+
+    // Routes
     getRoutes,
     getRouteStages,
     updateRouteVerification,
 
+    // Profile
     getMyProfile,
     updateMyProfile,
 
+    // Users
     getUsers,
     updateUserStatus,
     deleteUser,
 
+    // Formatting
     formatMoney,
     formatDate,
     formatDateTime,
 
+    // Messages
     showMessage,
     clearMessage
 
 };
 
 
+// =====================================================
+// MODULE INITIALIZATION
+// =====================================================
 
 console.log("Smart Matatu API module loaded successfully.");
 console.log("Backend API:", API_BASE);

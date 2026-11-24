@@ -1,0 +1,595 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta
+        name="description"
+        content="Monitor Smart Matatu System transaction discrepancies, payment alerts and verification notifications."
+    >
+
+    <title>Notifications | Smart Matatu</title>
+
+    <link rel="stylesheet" href="../css/style.css">
+
+    <script src="../js/api.js" defer></script>
+    <script src="../js/auth.js" defer></script>
+    <script src="../js/app-shell.js" defer></script>
+    <script src="../js/notifications.js" defer></script>
+</head>
+
+<body class="app-page">
+
+    <div class="app-layout">
+
+        <!-- SIDEBAR -->
+        <aside class="app-sidebar">
+
+            <div class="sidebar-brand">
+                <a href="../index.html">
+                    SMART <span>MATATU</span>
+                </a>
+            </div>
+
+            <div class="sidebar-user">
+
+                <div class="user-avatar">
+                    <span>SM</span>
+                </div>
+
+                <div class="user-details">
+
+                    <strong id="current-user-name">
+                        System User
+                    </strong>
+
+                    <small id="current-user-role">
+                        User
+                    </small>
+
+                </div>
+
+            </div>
+
+            <nav class="sidebar-navigation">
+
+                <p class="sidebar-heading">
+                    MAIN MENU
+                </p>
+
+                <a href="dashboard.html" data-page="dashboard">
+                    <span>▦</span>
+                    Dashboard
+                </a>
+
+                <a href="fare-collection.html" data-page="fare-collection">
+                    <span>▤</span>
+                    Fare Collection
+                </a>
+
+                <a href="transactions.html" data-page="transactions">
+                    <span>⇄</span>
+                    Transactions
+                </a>
+
+
+                <a href="revenue-reports.html" data-page="revenue-reports">
+                    <span>▥</span>
+                    Revenue Reports
+                </a>
+
+                <p class="sidebar-heading">
+                    MANAGEMENT
+                </p>
+
+                <a
+                    href="users.html"
+                    data-page="users"
+                    id="users-navigation-link"
+                >
+                    <span>♙</span>
+                    User Management
+                </a>
+
+                <a href="profile.html" data-page="profile">
+                    <span>⚙</span>
+                    My Profile
+                </a>
+
+            </nav>
+
+            <div class="sidebar-bottom">
+
+                <button
+                    type="button"
+                    id="logout-button"
+                    class="logout-button"
+                >
+                    <span>↪</span>
+                    Sign Out
+                </button>
+
+            </div>
+
+        </aside>
+
+
+        <!-- MAIN CONTENT -->
+        <main class="app-main">
+
+            <!-- TOPBAR -->
+            <header class="app-topbar">
+
+                <div>
+
+                    <p class="topbar-eyebrow">
+                        SMART MATATU SYSTEM
+                    </p>
+
+                    <h1>Notification Centre</h1>
+
+                </div>
+
+                <div class="topbar-user">
+
+                    <span>Welcome,</span>
+
+                    <strong id="logged-in-username">
+                        System User
+                    </strong>
+
+                </div>
+
+            </header>
+
+
+            <div class="dashboard-content notification-page">
+
+                <!-- PAGE INTRODUCTION -->
+                <section class="dashboard-intro notification-header">
+
+                    <div>
+
+                        <h2>Transaction Monitoring & Alerts</h2>
+
+                        <p>
+                            Monitor transaction discrepancies, payment
+                            irregularities and verification activities
+                            across the Smart Matatu System.
+                        </p>
+
+                    </div>
+
+                    <button
+                        type="button"
+                        id="refresh-notifications"
+                        class="btn btn-primary"
+                    >
+                        ↻ Refresh Notifications
+                    </button>
+
+                </section>
+
+
+                <!-- SUMMARY CARDS -->
+                <section class="notification-summary-grid">
+
+                    <article class="notification-summary-card">
+
+                        <div class="notification-summary-icon">
+                            ◉
+                        </div>
+
+                        <div>
+
+                            <p>Total Notifications</p>
+
+                            <h2 id="notification-total-count">
+                                0
+                            </h2>
+
+                            <small>
+                                Retrieved notifications
+                            </small>
+
+                        </div>
+
+                    </article>
+
+
+                    <article class="notification-summary-card">
+
+                        <div class="notification-summary-icon">
+                            ●
+                        </div>
+
+                        <div>
+
+                            <p>Unread Notifications</p>
+
+                            <h2 id="notification-unread-count">
+                                0
+                            </h2>
+
+                            <small>
+                                Require attention
+                            </small>
+
+                        </div>
+
+                    </article>
+
+
+                    <article class="notification-summary-card">
+
+                        <div class="notification-summary-icon">
+                            !
+                        </div>
+
+                        <div>
+
+                            <p>Critical Alerts</p>
+
+                            <h2 id="notification-critical-count">
+                                0
+                            </h2>
+
+                            <small>
+                                High-priority discrepancies
+                            </small>
+
+                        </div>
+
+                    </article>
+
+
+                    <article class="notification-summary-card">
+
+                        <div class="notification-summary-icon">
+                            ✓
+                        </div>
+
+                        <div>
+
+                            <p>Resolved Alerts</p>
+
+                            <h2 id="notification-resolved-count">
+                                0
+                            </h2>
+
+                            <small>
+                                Marked as resolved
+                            </small>
+
+                        </div>
+
+                    </article>
+
+                </section>
+
+
+                <!-- NOTIFICATION MESSAGE -->
+                <section
+                    id="notification-message"
+                    class="message-box"
+                    role="status"
+                    aria-live="polite"
+                ></section>
+
+
+                <!-- NOTIFICATION FILTERS -->
+                <section class="content-panel notification-filter-panel">
+
+                    <div class="panel-heading">
+
+                        <div>
+
+                            <h2>Filter Notifications</h2>
+
+                            <p>
+                                Find alerts according to their severity
+                                and investigation status.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- FILTER TABS -->
+                    <div
+                        class="notification-filter-tabs"
+                        role="group"
+                        aria-label="Notification filters"
+                    >
+
+                        <button
+                            type="button"
+                            class="notification-filter active"
+                            data-notification-filter="all"
+                            aria-pressed="true"
+                        >
+                            All
+                        </button>
+
+                        <button
+                            type="button"
+                            class="notification-filter"
+                            data-notification-filter="unread"
+                            aria-pressed="false"
+                        >
+                            Unread
+                        </button>
+
+                        <button
+                            type="button"
+                            class="notification-filter"
+                            data-notification-filter="critical"
+                            aria-pressed="false"
+                        >
+                            Critical
+                        </button>
+
+                        <button
+                            type="button"
+                            class="notification-filter"
+                            data-notification-filter="under-review"
+                            aria-pressed="false"
+                        >
+                            Under Review
+                        </button>
+
+                        <button
+                            type="button"
+                            class="notification-filter"
+                            data-notification-filter="resolved"
+                            aria-pressed="false"
+                        >
+                            Resolved
+                        </button>
+
+                    </div>
+
+
+                    <!-- SEARCH AND SEVERITY -->
+                    <div class="notification-search-grid">
+
+                        <div class="form-group">
+
+                            <label for="notification-search">
+                                Search Notifications
+                            </label>
+
+                            <input
+                                type="search"
+                                id="notification-search"
+                                placeholder="Search title, transaction ID, route or conductor..."
+                            >
+
+                        </div>
+
+
+                        <div class="form-group">
+
+                            <label for="notification-severity-filter">
+                                Severity
+                            </label>
+
+                            <select id="notification-severity-filter">
+
+                                <option value="">
+                                    All Severity Levels
+                                </option>
+
+                                <option value="critical">
+                                    Critical
+                                </option>
+
+                                <option value="high">
+                                    High
+                                </option>
+
+                                <option value="medium">
+                                    Medium
+                                </option>
+
+                                <option value="low">
+                                    Low
+                                </option>
+
+                            </select>
+
+                        </div>
+
+
+                        <div class="notification-filter-actions">
+
+                            <button
+                                type="button"
+                                id="clear-notification-filters"
+                                class="btn btn-outline"
+                            >
+                                Clear Filters
+                            </button>
+
+                        </div>
+
+                    </div>
+
+                </section>
+
+
+                <!-- NOTIFICATION LIST -->
+                <section class="content-panel notification-list-panel">
+
+                    <div class="panel-heading panel-heading-between">
+
+                        <div>
+
+                            <h2>System Alerts</h2>
+
+                            <p id="notification-results-count">
+                                Loading notifications...
+                            </p>
+
+                        </div>
+
+                        <span class="table-record-label">
+                            Notification History
+                        </span>
+
+                    </div>
+
+
+                    <!-- NOTIFICATION CARDS WILL BE INSERTED HERE -->
+                    <div
+                        id="notification-list"
+                        class="notification-list"
+                        aria-live="polite"
+                    >
+
+                        <div class="notification-loading-state">
+
+                            <p>
+                                Loading system notifications...
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- LAST UPDATED -->
+                    <div class="table-footer">
+
+                        <span id="notifications-last-updated">
+                            Last updated: Not yet loaded
+                        </span>
+
+                    </div>
+
+                </section>
+
+
+                <!-- INFORMATION PANEL -->
+                <section class="content-panel notification-information-panel">
+
+                    <div class="panel-heading">
+
+                        <div>
+
+                            <h2>Understanding Notification Alerts</h2>
+
+                            <p>
+                                Notifications help identify irregularities
+                                that may require further investigation.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="notification-information-grid">
+
+                        <div class="notification-information-item">
+
+                            <span class="severity-indicator critical"></span>
+
+                            <div>
+
+                                <strong>Critical</strong>
+
+                                <p>
+                                    Serious transaction discrepancies
+                                    requiring immediate attention.
+                                </p>
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="notification-information-item">
+
+                            <span class="severity-indicator high"></span>
+
+                            <div>
+
+                                <strong>High</strong>
+
+                                <p>
+                                    Significant irregularities requiring
+                                    investigation.
+                                </p>
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="notification-information-item">
+
+                            <span class="severity-indicator medium"></span>
+
+                            <div>
+
+                                <strong>Medium</strong>
+
+                                <p>
+                                    Notifications requiring review
+                                    or additional verification.
+                                </p>
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="notification-information-item">
+
+                            <span class="severity-indicator low"></span>
+
+                            <div>
+
+                                <strong>Low</strong>
+
+                                <p>
+                                    General system notifications
+                                    and low-priority alerts.
+                                </p>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </section>
+
+
+                <!-- FOOTER -->
+                <section class="dashboard-footer">
+
+                    <p>
+                        Smart Matatu System |
+                        Revenue Management and Verification
+                    </p>
+
+                    <span>
+                        Notification Centre
+                    </span>
+
+                </section>
+
+            </div>
+
+        </main>
+
+    </div>
+
+</body>
+
+</html>

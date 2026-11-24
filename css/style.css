@@ -1,7 +1,3 @@
-/* =========================================================
-   SMART MATATU SYSTEM — GLOBAL STYLESHEET
-   ========================================================= */
-
 :root {
     --primary: #126b45;
     --primary-dark: #084d32;
@@ -26,10 +22,6 @@
     --shadow: 0 5px 20px rgba(20,45,30,.07);
     --transition: .25s ease;
 }
-
-/* =========================================================
-   RESET AND GLOBAL ELEMENTS
-   ========================================================= */
 
 * {
     margin: 0;
@@ -78,10 +70,6 @@ h3 { font-size: 17px; }
 p {
     color: var(--muted);
 }
-
-/* =========================================================
-   BUTTONS
-   ========================================================= */
 
 .btn {
     display: inline-flex;
@@ -153,10 +141,6 @@ p {
     width: 100%;
 }
 
-/* =========================================================
-   FORMS
-   ========================================================= */
-
 .form-group {
     margin-bottom: 18px;
 }
@@ -212,10 +196,6 @@ input[type="radio"], input[type="checkbox"] {
     font-size: 12px;
 }
 
-/* =========================================================
-   GENERAL CARDS
-   ========================================================= */
-
 .card {
     background: var(--surface);
     border: 1px solid var(--border);
@@ -240,9 +220,7 @@ input[type="radio"], input[type="checkbox"] {
     font-size: 13px;
 }
 
-/* =========================================================
-   LANDING PAGE
-   ========================================================= */
+/* LANDING PAGE */
 
 .landing-page {
     background: white;
@@ -421,9 +399,7 @@ input[type="radio"], input[type="checkbox"] {
     margin-top: 18px;
 }
 
-/* =========================================================
-   AUTHENTICATION PAGES
-   ========================================================= */
+/* AUTHENTICATION */
 
 .auth-page {
     min-height: 100vh;
@@ -601,10 +577,7 @@ input[type="radio"], input[type="checkbox"] {
     margin-top: 10px;
 }
 
-/* =========================================================
-   LEGACY APPLICATION LAYOUT
-   Retained for other pages using the older class names.
-   ========================================================= */
+/* APPLICATION LAYOUT */
 
 .app-layout {
     min-height: 100vh;
@@ -724,9 +697,7 @@ input[type="radio"], input[type="checkbox"] {
     margin-top: 5px;
 }
 
-/* =========================================================
-   KPI CARDS
-   ========================================================= */
+/* DASHBOARD KPIs */
 
 .stats-grid,
 .kpi-grid {
@@ -761,10 +732,6 @@ input[type="radio"], input[type="checkbox"] {
     font-size: 23px;
     margin-bottom: 10px;
 }
-
-/* =========================================================
-   LEGACY DASHBOARD AND CHARTS
-   ========================================================= */
 
 .dashboard-grid {
     display: grid;
@@ -807,9 +774,7 @@ input[type="radio"], input[type="checkbox"] {
     max-width: 100%;
 }
 
-/* =========================================================
-   FARE COLLECTION
-   ========================================================= */
+/* FARE MANAGEMENT */
 
 .fare-layout {
     display: grid;
@@ -881,9 +846,7 @@ input[type="radio"], input[type="checkbox"] {
     text-align: right;
 }
 
-/* =========================================================
-   TABLES
-   ========================================================= */
+/* TABLES */
 
 .table-container {
     width: 100%;
@@ -934,10 +897,6 @@ tbody tr:last-child td {
     color: var(--muted);
 }
 
-/* =========================================================
-   FILTERS
-   ========================================================= */
-
 .filter-bar {
     display: flex;
     align-items: end;
@@ -962,9 +921,7 @@ tbody tr:last-child td {
     margin-bottom: 6px;
 }
 
-/* =========================================================
-   STATUS
-   ========================================================= */
+/* STATUS BADGES */
 
 .status-badge {
     display: inline-flex;
@@ -998,9 +955,7 @@ tbody tr:last-child td {
     background: var(--info-bg);
 }
 
-/* =========================================================
-   MESSAGES
-   ========================================================= */
+/* MESSAGES AND ALERTS */
 
 .message-box {
     display: none;
@@ -1045,10 +1000,6 @@ tbody tr:last-child td {
     background: var(--danger-bg);
 }
 
-/* =========================================================
-   USER MANAGEMENT
-   ========================================================= */
-
 .user-actions {
     display: flex;
     align-items: center;
@@ -1061,9 +1012,7 @@ tbody tr:last-child td {
     font-weight: 700;
 }
 
-/* =========================================================
-   PROFILE
-   ========================================================= */
+/* PROFILE */
 
 .profile-layout {
     display: grid;
@@ -1112,9 +1061,7 @@ tbody tr:last-child td {
     text-align: right;
 }
 
-/* =========================================================
-   REVENUE REPORTS
-   ========================================================= */
+/* REPORTS */
 
 .report-summary {
     display: grid;
@@ -1133,9 +1080,7 @@ tbody tr:last-child td {
     gap: 22px;
 }
 
-/* =========================================================
-   APPLICATION LAYOUT — MATCHES dashboard.html
-   ========================================================= */
+/* APP PAGE */
 
 body.app-page {
     min-height: 100vh;
@@ -1151,8 +1096,6 @@ body.app-page {
     min-height: 100svh;
     width: 100%;
 }
-
-/* SIDEBAR */
 
 .app-page .app-sidebar {
     position: fixed;
@@ -1200,8 +1143,6 @@ body.app-page {
     color: var(--secondary);
 }
 
-/* SIDEBAR USER */
-
 .app-page .sidebar-user {
     display: flex;
     align-items: center;
@@ -1243,8 +1184,6 @@ body.app-page {
     font-size: 11px;
     text-transform: capitalize;
 }
-
-/* SIDEBAR NAVIGATION */
 
 .app-page .sidebar-navigation {
     display: flex;
@@ -1298,8 +1237,6 @@ body.app-page {
     font-weight: 700;
 }
 
-/* SIDEBAR SIGN OUT */
-
 .app-page .sidebar-bottom {
     margin-top: auto;
     padding-top: 25px;
@@ -1329,8 +1266,6 @@ body.app-page {
     border-color: rgba(255,255,255,.35);
 }
 
-/* MAIN CONTENT */
-
 .app-page .app-main {
     display: flex;
     flex-direction: column;
@@ -1340,8 +1275,6 @@ body.app-page {
     width: calc(100% - var(--sidebar-width));
     margin-left: var(--sidebar-width);
 }
-
-/* TOP BAR */
 
 .app-page .app-topbar {
     position: sticky;
@@ -1385,8 +1318,6 @@ body.app-page {
     font-size: 14px;
 }
 
-/* DASHBOARD CONTENT */
-
 .app-page .dashboard-content {
     width: 100%;
     max-width: 1700px;
@@ -1394,8 +1325,6 @@ body.app-page {
     margin: 0 auto;
     padding: 30px 34px 24px;
 }
-
-/* DASHBOARD INTRODUCTION */
 
 .app-page .dashboard-intro {
     display: flex;
@@ -1418,8 +1347,6 @@ body.app-page {
     flex-shrink: 0;
     min-height: 43px;
 }
-
-/* KPI GRID */
 
 .app-page .kpi-grid {
     display: grid;
@@ -1487,8 +1414,6 @@ body.app-page {
     line-height: 1.5;
 }
 
-/* REVENUE SUMMARY */
-
 .app-page .revenue-summary,
 .app-page .charts-section,
 .app-page .recent-transactions {
@@ -1533,8 +1458,6 @@ body.app-page {
     text-decoration: underline;
 }
 
-/* PAYMENT METHOD SUMMARY */
-
 .app-page .revenue-method-grid {
     display: grid;
     grid-template-columns: repeat(4,minmax(0,1fr));
@@ -1564,9 +1487,7 @@ body.app-page {
     overflow-wrap: anywhere;
 }
 
-/* =========================================================
-   PERFORMANCE ANALYTICS
-   ========================================================= */
+/* DASHBOARD CHARTS - PRESERVED */
 
 .app-page .charts-grid {
     display: grid;
@@ -1617,9 +1538,7 @@ body.app-page {
     max-width: 100%;
 }
 
-/* =========================================================
-   RECENT TRANSACTIONS
-   ========================================================= */
+/* TRANSACTION TABLE */
 
 .app-page .table-responsive {
     width: 100%;
@@ -1665,8 +1584,6 @@ body.app-page {
     border-bottom: none;
 }
 
-/* DASHBOARD FOOTER */
-
 .app-page .dashboard-footer {
     display: flex;
     align-items: center;
@@ -1687,9 +1604,605 @@ body.app-page {
     font-size: 11px;
 }
 
-/* =========================================================
-   UTILITIES
-   ========================================================= */
+/* ==================================================
+   NOTIFICATION CENTRE
+   ================================================== */
+
+/* Sidebar notification unread badge */
+
+.notification-nav-link {
+    position: relative;
+}
+
+.notification-nav-badge,
+.notification-count,
+.unread-count {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 21px;
+    height: 21px;
+    padding: 0 6px;
+    margin-left: auto;
+    border-radius: 20px;
+    background: var(--danger);
+    color: #ffffff;
+    font-size: 10px;
+    font-weight: 800;
+    line-height: 1;
+}
+
+.notification-nav-badge:empty,
+.notification-count:empty,
+.unread-count:empty {
+    display: none;
+}
+
+/* Notification page container */
+
+.notification-page {
+    width: 100%;
+    max-width: 1700px;
+    min-width: 0;
+    margin: 0 auto;
+    padding: 30px 34px;
+}
+
+.notification-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    margin-bottom: 25px;
+}
+
+.notification-header h2 {
+    font-size: 23px;
+    margin-bottom: 5px;
+}
+
+.notification-header p {
+    font-size: 13px;
+}
+
+.notification-header-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+/* Notification summary cards */
+
+.notification-summary-grid {
+    display: grid;
+    grid-template-columns: repeat(4,minmax(0,1fr));
+    gap: 17px;
+    margin-bottom: 25px;
+}
+
+.notification-summary-card {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    min-width: 0;
+    padding: 19px;
+    background: #ffffff;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+}
+
+.notification-summary-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    width: 42px;
+    height: 42px;
+    border-radius: 10px;
+    background: var(--primary-light);
+    color: var(--primary);
+    font-size: 19px;
+}
+
+.notification-summary-card.critical .notification-summary-icon {
+    color: var(--danger);
+    background: var(--danger-bg);
+}
+
+.notification-summary-card.unread .notification-summary-icon {
+    color: var(--info);
+    background: var(--info-bg);
+}
+
+.notification-summary-card.resolved .notification-summary-icon {
+    color: var(--success);
+    background: var(--success-bg);
+}
+
+.notification-summary-details {
+    min-width: 0;
+}
+
+.notification-summary-details span {
+    display: block;
+    color: var(--muted);
+    font-size: 11px;
+    font-weight: 600;
+}
+
+.notification-summary-details strong {
+    display: block;
+    margin-top: 3px;
+    color: var(--text);
+    font-size: 23px;
+    font-weight: 800;
+}
+
+/* Notification filter panel */
+
+.notification-filters {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 15px;
+    padding: 17px;
+    margin-bottom: 20px;
+    background: #ffffff;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+}
+
+.notification-filter-tabs {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 7px;
+}
+
+.notification-filter,
+.notification-filter-tab {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    padding: 9px 14px;
+    border: 1px solid transparent;
+    border-radius: 7px;
+    background: transparent;
+    color: var(--muted);
+    font-size: 12px;
+    font-weight: 700;
+    transition: var(--transition);
+}
+
+.notification-filter:hover,
+.notification-filter-tab:hover {
+    background: var(--primary-light);
+    color: var(--primary);
+}
+
+.notification-filter.active,
+.notification-filter-tab.active {
+    background: var(--primary-light);
+    border-color: #cce6d7;
+    color: var(--primary-dark);
+}
+
+.notification-filter-count {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 19px;
+    height: 19px;
+    padding: 0 5px;
+    border-radius: 20px;
+    background: rgba(18,107,69,.10);
+    font-size: 10px;
+}
+
+.notification-search {
+    width: 250px;
+    max-width: 100%;
+}
+
+/* Notification list */
+
+.notification-list {
+    display: flex;
+    flex-direction: column;
+    gap: 13px;
+}
+
+.notification-card {
+    position: relative;
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    min-width: 0;
+    padding: 20px;
+    background: #ffffff;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    box-shadow: 0 3px 12px rgba(20,45,30,.035);
+    transition: var(--transition);
+}
+
+.notification-card:hover {
+    border-color: #c8d9ce;
+    box-shadow: var(--shadow);
+    transform: translateY(-2px);
+}
+
+.notification-card.unread {
+    background: #fbfefc;
+    border-left: 4px solid var(--primary);
+}
+
+.notification-card.severity-critical {
+    border-left: 4px solid var(--danger);
+}
+
+.notification-card.severity-high {
+    border-left: 4px solid #e47b26;
+}
+
+.notification-card.severity-medium {
+    border-left: 4px solid var(--warning);
+}
+
+.notification-card.severity-low {
+    border-left: 4px solid var(--info);
+}
+
+.notification-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    width: 43px;
+    height: 43px;
+    border-radius: 50%;
+    background: var(--info-bg);
+    color: var(--info);
+    font-size: 18px;
+}
+
+.notification-card.severity-critical .notification-icon {
+    background: var(--danger-bg);
+    color: var(--danger);
+}
+
+.notification-card.severity-high .notification-icon {
+    background: #fff0e6;
+    color: #d96819;
+}
+
+.notification-card.severity-medium .notification-icon {
+    background: var(--warning-bg);
+    color: var(--warning);
+}
+
+.notification-card.severity-low .notification-icon {
+    background: var(--info-bg);
+    color: var(--info);
+}
+
+.notification-content {
+    flex: 1;
+    min-width: 0;
+}
+
+.notification-top-row {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 7px;
+}
+
+.notification-title {
+    color: var(--text);
+    font-size: 14px;
+    font-weight: 750;
+    line-height: 1.4;
+}
+
+.notification-card.unread .notification-title {
+    font-weight: 800;
+}
+
+.notification-message {
+    margin-bottom: 12px;
+    color: var(--muted);
+    font-size: 12px;
+    line-height: 1.6;
+    overflow-wrap: anywhere;
+}
+
+.notification-time {
+    flex-shrink: 0;
+    color: var(--muted);
+    font-size: 11px;
+}
+
+.notification-meta {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 9px 15px;
+    margin-bottom: 13px;
+}
+
+.notification-meta-item {
+    color: var(--muted);
+    font-size: 11px;
+}
+
+.notification-meta-item strong {
+    color: var(--text);
+    font-weight: 700;
+}
+
+.notification-actions {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.notification-actions button,
+.notification-actions a {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    min-height: 32px;
+    padding: 6px 11px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    background: #ffffff;
+    color: var(--text);
+    font-size: 11px;
+    font-weight: 700;
+    transition: var(--transition);
+}
+
+.notification-actions button:hover,
+.notification-actions a:hover {
+    border-color: var(--primary);
+    background: var(--primary-light);
+    color: var(--primary);
+}
+
+.notification-actions .notification-view-button {
+    border-color: var(--primary);
+    background: var(--primary);
+    color: #ffffff;
+}
+
+.notification-actions .notification-view-button:hover {
+    background: var(--primary-dark);
+    color: #ffffff;
+}
+
+.notification-actions .notification-resolve-button {
+    color: var(--success);
+    border-color: #b8e1c7;
+}
+
+.notification-actions .notification-resolve-button:hover {
+    background: var(--success-bg);
+}
+
+.notification-unread-dot {
+    flex-shrink: 0;
+    width: 9px;
+    height: 9px;
+    margin-top: 6px;
+    border-radius: 50%;
+    background: var(--primary);
+}
+
+/* Severity labels */
+
+.severity-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 5px 9px;
+    border-radius: 20px;
+    font-size: 10px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: .3px;
+}
+
+.severity-critical {
+    color: #b42323;
+    background: #fde6e6;
+}
+
+.severity-high {
+    color: #b94b12;
+    background: #fff0e6;
+}
+
+.severity-medium {
+    color: #946200;
+    background: #fff5df;
+}
+
+.severity-low {
+    color: #1d65a5;
+    background: #eaf3fc;
+}
+
+/* Notification status labels */
+
+.notification-status {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 5px 9px;
+    border-radius: 20px;
+    font-size: 10px;
+    font-weight: 750;
+    text-transform: capitalize;
+}
+
+.notification-status.unread {
+    color: var(--info);
+    background: var(--info-bg);
+}
+
+.notification-status.read {
+    color: #58675f;
+    background: #edf1ee;
+}
+
+.notification-status.acknowledged {
+    color: #7958a6;
+    background: #f1eafb;
+}
+
+.notification-status.investigating {
+    color: #946200;
+    background: var(--warning-bg);
+}
+
+.notification-status.resolved {
+    color: var(--success);
+    background: var(--success-bg);
+}
+
+/* Notification financial details */
+
+.notification-financial-details {
+    display: grid;
+    grid-template-columns: repeat(4,minmax(0,1fr));
+    gap: 10px;
+    padding: 13px;
+    margin: 12px 0;
+    background: #f7faf8;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+}
+
+.notification-financial-item {
+    min-width: 0;
+}
+
+.notification-financial-item span {
+    display: block;
+    margin-bottom: 4px;
+    color: var(--muted);
+    font-size: 10px;
+}
+
+.notification-financial-item strong {
+    display: block;
+    color: var(--text);
+    font-size: 13px;
+    overflow-wrap: anywhere;
+}
+
+.notification-financial-item.difference strong {
+    color: var(--danger);
+}
+
+/* Notification empty state */
+
+.notification-empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 260px;
+    padding: 35px 20px;
+    background: #ffffff;
+    border: 1px dashed #cbd8cf;
+    border-radius: var(--radius);
+    text-align: center;
+}
+
+.notification-empty-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 65px;
+    height: 65px;
+    margin-bottom: 15px;
+    border-radius: 50%;
+    background: var(--primary-light);
+    color: var(--primary);
+    font-size: 27px;
+}
+
+.notification-empty-state h3 {
+    margin-bottom: 7px;
+    font-size: 17px;
+}
+
+.notification-empty-state p {
+    max-width: 390px;
+    font-size: 12px;
+}
+
+/* Notification loading and errors */
+
+.notification-loading {
+    padding: 35px 20px;
+    color: var(--muted);
+    text-align: center;
+    font-size: 13px;
+}
+
+.notification-error {
+    padding: 15px;
+    border: 1px solid #f2caca;
+    border-radius: 8px;
+    background: var(--danger-bg);
+    color: var(--danger);
+    font-size: 12px;
+}
+
+.notification-pagination {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-top: 20px;
+    padding: 14px 0;
+}
+
+.notification-pagination p {
+    font-size: 11px;
+}
+
+.notification-pagination button {
+    padding: 8px 13px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    background: #ffffff;
+    color: var(--text);
+    font-size: 11px;
+    font-weight: 700;
+}
+
+.notification-pagination button:hover:not(:disabled) {
+    background: var(--primary-light);
+    border-color: var(--primary);
+}
+
+.notification-pagination button:disabled {
+    opacity: .5;
+    cursor: not-allowed;
+}
+
+/* GENERAL UTILITY CLASSES */
 
 .text-primary { color: var(--primary); }
 .text-muted { color: var(--muted); }
@@ -1720,9 +2233,7 @@ body.app-page {
     gap: 15px;
 }
 
-/* =========================================================
-   RESPONSIVE LAYOUT — TABLETS AND SMALL LAPTOPS
-   ========================================================= */
+/* RESPONSIVE: 1200px */
 
 @media (max-width: 1200px) {
 
@@ -1747,7 +2258,13 @@ body.app-page {
     .profile-layout {
         grid-template-columns: 1fr;
     }
+
+    .notification-summary-grid {
+        grid-template-columns: repeat(2,minmax(0,1fr));
+    }
 }
+
+/* RESPONSIVE: 900px */
 
 @media (max-width: 900px) {
 
@@ -1794,11 +2311,17 @@ body.app-page {
     .landing-nav {
         gap: 13px;
     }
+
+    .notification-page {
+        padding: 24px 22px;
+    }
+
+    .notification-financial-details {
+        grid-template-columns: repeat(2,minmax(0,1fr));
+    }
 }
 
-/* =========================================================
-   RESPONSIVE LAYOUT — TABLETS AND MOBILE
-   ========================================================= */
+/* RESPONSIVE: 700px */
 
 @media (max-width: 700px) {
 
@@ -2031,11 +2554,88 @@ body.app-page {
     .user-actions {
         flex-wrap: wrap;
     }
+
+    /* Notification responsive layout */
+
+    .notification-page {
+        padding: 19px 15px;
+    }
+
+    .notification-header {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 13px;
+    }
+
+    .notification-header-actions {
+        width: 100%;
+    }
+
+    .notification-filters {
+        align-items: stretch;
+        flex-direction: column;
+        padding: 13px;
+    }
+
+    .notification-filter-tabs {
+        width: 100%;
+    }
+
+    .notification-filter,
+    .notification-filter-tab {
+        padding: 8px 10px;
+        font-size: 11px;
+    }
+
+    .notification-search {
+        width: 100%;
+    }
+
+    .notification-card {
+        gap: 11px;
+        padding: 15px 12px;
+    }
+
+    .notification-icon {
+        width: 36px;
+        height: 36px;
+        font-size: 15px;
+    }
+
+    .notification-top-row {
+        flex-wrap: wrap;
+    }
+
+    .notification-time {
+        width: 100%;
+    }
+
+    .notification-summary-grid {
+        gap: 10px;
+    }
+
+    .notification-summary-card {
+        padding: 13px 10px;
+        gap: 9px;
+    }
+
+    .notification-summary-icon {
+        width: 34px;
+        height: 34px;
+        font-size: 15px;
+    }
+
+    .notification-summary-details strong {
+        font-size: 19px;
+    }
+
+    .notification-financial-details {
+        gap: 9px;
+        padding: 10px;
+    }
 }
 
-/* =========================================================
-   VERY SMALL MOBILE SCREENS
-   ========================================================= */
+/* RESPONSIVE: 420px */
 
 @media (max-width: 420px) {
 
@@ -2073,11 +2673,31 @@ body.app-page {
     .app-page .sidebar-navigation a {
         font-size: 10px;
     }
+
+    .notification-summary-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .notification-financial-details {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .notification-actions {
+        align-items: stretch;
+    }
+
+    .notification-actions button,
+    .notification-actions a {
+        flex: 1 1 auto;
+    }
+
+    .notification-pagination {
+        align-items: flex-start;
+        flex-direction: column;
+    }
 }
 
-/* =========================================================
-   SHORT LAPTOP SCREENS — AUTHENTICATION
-   ========================================================= */
+/* AUTHENTICATION SHORT SCREEN SUPPORT */
 
 @media (min-width: 601px) and (max-height: 750px) {
 
@@ -2115,4 +2735,417 @@ body.app-page {
     .back-home {
         margin-top: 9px;
     }
+}
+/* =========================================================
+   NOTIFICATION CENTRE — LAYOUT AND SIDEBAR ICON FIX
+   ========================================================= */
+
+/* Keep the notification card within the available content width */
+.notification-card,
+.notification-item {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    overflow: hidden;
+}
+
+/* Arrange notification content into balanced columns */
+.notification-card {
+    display: grid;
+    grid-template-columns:
+        minmax(180px, 1.1fr)
+        minmax(190px, 1.2fr)
+        minmax(300px, 2fr)
+        minmax(120px, auto);
+    align-items: start;
+    gap: 22px;
+    padding: 24px;
+}
+
+/* Prevent content from forcing columns beyond their width */
+.notification-card > *,
+.notification-item > * {
+    min-width: 0;
+    max-width: 100%;
+}
+
+/* Improve notification heading and message wrapping */
+.notification-card h3,
+.notification-card p,
+.notification-card strong,
+.notification-card span {
+    overflow-wrap: anywhere;
+    word-break: normal;
+}
+
+/* Financial information should use a proper four-column grid */
+.notification-financial-details {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 14px;
+    width: 100%;
+    min-width: 0;
+    padding: 18px;
+    box-sizing: border-box;
+}
+
+/* Keep each financial item vertically organised */
+.notification-financial-details > *,
+.notification-detail {
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+/* Separate financial labels from their values */
+.notification-financial-details strong,
+.notification-detail strong {
+    display: block;
+    overflow-wrap: anywhere;
+    line-height: 1.5;
+}
+
+/* Keep verification information readable */
+.notification-financial-details p,
+.notification-detail p {
+    margin: 0;
+    line-height: 1.5;
+}
+
+/* Stack action buttons neatly */
+.notification-actions {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+    min-width: 120px;
+}
+
+.notification-actions button {
+    width: 100%;
+    white-space: normal;
+}
+
+/* Make the notification sidebar icon match the other line icons */
+.notification-nav-link > span:first-child {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 22px;
+    min-width: 22px;
+    height: 22px;
+    margin-right: 10px;
+    font-size: 0 !important;
+    color: inherit;
+}
+
+/* Replace the yellow emoji with a simple outline bell */
+.notification-nav-link > span:first-child::before {
+    content: "";
+    display: block;
+    width: 19px;
+    height: 19px;
+    background-color: currentColor;
+
+    -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9'/%3E%3Cpath d='M10 21h4'/%3E%3C/svg%3E") center / contain no-repeat;
+    mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9'/%3E%3Cpath d='M10 21h4'/%3E%3C/svg%3E") center / contain no-repeat;
+}
+
+/* Keep the unread badge separate from the icon */
+.notification-nav-badge {
+    margin-left: auto;
+    flex-shrink: 0;
+}
+
+/* Tablet layout */
+@media (max-width: 1200px) {
+    .notification-card {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .notification-financial-details {
+        grid-column: 1 / -1;
+    }
+
+    .notification-actions {
+        flex-direction: row;
+        flex-wrap: wrap;
+        grid-column: 1 / -1;
+    }
+
+    .notification-actions button {
+        width: auto;
+    }
+}
+
+/* Mobile layout */
+@media (max-width: 700px) {
+    .notification-card,
+    .notification-item {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+        padding: 16px;
+    }
+
+    .notification-financial-details {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .notification-actions {
+        width: 100%;
+        flex-direction: column;
+    }
+
+    .notification-actions button {
+        width: 100%;
+    }
+}
+/* =========================================================
+   SMART MATATU — NOTIFICATION CENTRE FINAL LAYOUT
+   ========================================================= */
+
+/* Main notification card */
+.notification-card {
+    display: grid !important;
+    grid-template-columns: minmax(230px, 0.9fr) minmax(0, 1.6fr) !important;
+    grid-template-rows: auto auto auto auto;
+    gap: 18px 24px !important;
+
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+
+    padding: 24px !important;
+    box-sizing: border-box !important;
+    overflow: visible !important;
+}
+
+/* Notification heading */
+.notification-card .notification-card-header {
+    grid-column: 1;
+    grid-row: 1;
+    min-width: 0;
+}
+
+.notification-card .notification-title {
+    font-size: 14px !important;
+    font-weight: 600 !important;
+    line-height: 1.5 !important;
+    margin: 0 0 8px !important;
+}
+
+/* Notification message */
+.notification-card .notification-message {
+    grid-column: 1;
+    grid-row: 2;
+    min-width: 0;
+
+    font-size: 14px !important;
+    line-height: 1.6 !important;
+    margin: 0 !important;
+    overflow-wrap: anywhere;
+}
+
+/* Transaction information */
+.notification-card .notification-transaction-details {
+    grid-column: 1;
+    grid-row: 3;
+
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 14px !important;
+
+    min-width: 0;
+}
+
+/* Financial details — contained horizontal scrolling */
+.notification-card .notification-financial-details {
+    grid-column: 2;
+    grid-row: 1 / 4;
+
+    display: grid !important;
+    grid-template-columns: repeat(4, minmax(130px, 1fr)) !important;
+    grid-auto-flow: row;
+
+    gap: 16px !important;
+
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+
+    padding: 18px !important;
+    box-sizing: border-box !important;
+
+    overflow-x: auto !important;
+    overflow-y: hidden !important;
+}
+
+/* Financial labels and values */
+.notification-card .notification-financial-details .notification-detail {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 8px !important;
+
+    min-width: 0 !important;
+}
+
+.notification-card .notification-financial-details .notification-detail small {
+    display: block !important;
+    font-size: 13px !important;
+    font-weight: 500 !important;
+    line-height: 1.5 !important;
+    white-space: normal !important;
+}
+
+.notification-card .notification-financial-details .notification-detail strong {
+    display: block !important;
+    font-size: 14px !important;
+    font-weight: 600 !important;
+    line-height: 1.5 !important;
+    white-space: normal !important;
+    overflow-wrap: anywhere !important;
+}
+
+/* Verification note */
+.notification-card .notification-verification-note {
+    grid-column: 1 / -1 !important;
+    margin: 8px 0 0 !important;
+    font-size: 13px !important;
+    line-height: 1.6 !important;
+    overflow-wrap: anywhere;
+}
+
+/* Action buttons */
+.notification-card .notification-actions {
+    grid-column: 1 / -1;
+    grid-row: 4;
+
+    display: flex !important;
+    flex-direction: row !important;
+    flex-wrap: wrap !important;
+    justify-content: flex-end !important;
+    gap: 10px !important;
+
+    width: 100% !important;
+    min-width: 0 !important;
+}
+
+.notification-card .notification-action-button {
+    width: auto !important;
+    min-width: 115px;
+    min-height: 40px;
+    font-size: 13px !important;
+}
+
+/* Sidebar notification label — match other navigation links */
+.notification-nav-link {
+    font-size: 16px !important;
+    font-weight: 600 !important;
+}
+
+.notification-nav-link > span:nth-child(2) {
+    font-size: 16px !important;
+    font-weight: 600 !important;
+}
+
+/* Keep the notification badge aligned */
+.notification-nav-badge {
+    flex-shrink: 0;
+    margin-left: auto;
+}
+
+/* Tablet */
+@media (max-width: 1100px) {
+    .notification-card {
+        grid-template-columns: minmax(0, 1fr) !important;
+    }
+
+    .notification-card .notification-card-header,
+    .notification-card .notification-message,
+    .notification-card .notification-transaction-details,
+    .notification-card .notification-financial-details,
+    .notification-card .notification-actions {
+        grid-column: 1 !important;
+        grid-row: auto !important;
+    }
+
+    .notification-card .notification-financial-details {
+        grid-template-columns: repeat(4, minmax(130px, 1fr)) !important;
+    }
+}
+
+/* Mobile */
+@media (max-width: 600px) {
+    .notification-card {
+        padding: 16px !important;
+        gap: 16px !important;
+    }
+
+    .notification-card .notification-financial-details {
+        grid-template-columns: repeat(4, 130px) !important;
+    }
+
+    .notification-card .notification-actions {
+        flex-direction: column !important;
+    }
+
+    .notification-card .notification-action-button {
+        width: 100% !important;
+    }
+}
+/* Match Notifications navigation text with other sidebar links */
+.sidebar-navigation a.notification-nav-link,
+.sidebar-nav a.notification-nav-link {
+    font-size: 16px !important;
+    font-weight: 600 !important;
+}
+
+.notification-nav-link > span:nth-child(2) {
+    font-size: 16px !important;
+    font-weight: 600 !important;
+}
+/* Match Notifications sidebar label to Dashboard */
+.sidebar-navigation a.notification-nav-link,
+.sidebar-nav a.notification-nav-link {
+    font-family: "Segoe UI", Arial, sans-serif !important;
+    font-size: 13px !important;
+    font-weight: 500 !important;
+    line-height: 20.8px !important;
+}
+
+/* Keep the notification text consistent */
+.notification-nav-link > span:nth-child(2) {
+    font-size: 13px !important;
+    font-weight: 500 !important;
+    line-height: 20.8px !important;
+}
+/* =====================================================
+   ROUTE MANAGEMENT SIDEBAR LINK
+   Match existing sidebar typography
+===================================================== */
+
+.sidebar-navigation a#routes-navigation-link,
+.sidebar-nav a#routes-navigation-link {
+    font-family: "Segoe UI", Arial, sans-serif !important;
+    font-size: 13px !important;
+    font-weight: 500 !important;
+    line-height: 20.8px !important;
+}
+
+/* Route Management label */
+.sidebar-navigation #routes-navigation-link span:last-child,
+.sidebar-nav #routes-navigation-link span:last-child {
+    font-size: 13px !important;
+    font-weight: 500 !important;
+    line-height: 20.8px !important;
+}
+
+/* Route Management icon */
+.sidebar-navigation #routes-navigation-link span:first-child,
+.sidebar-nav #routes-navigation-link span:first-child {
+    font-size: 13px !important;
+    font-weight: 500 !important;
 }

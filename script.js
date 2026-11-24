@@ -92,9 +92,6 @@ function updateRoleBasedInterface() {
 }
 
 
-// ==========================================
-// ROUTE MANAGEMENT
-// ==========================================
 
 async function loadRoutes() {
     const token = sessionStorage.getItem("authToken");
